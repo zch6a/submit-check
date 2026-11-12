@@ -59,6 +59,9 @@ def run(argv: list[str] | None = None) -> int:
         print("submit-check: give the paper's folder or main .tex file (or --list-venues)", file=sys.stderr)
         return 2
     path = Path(args.paper)
+    if not path.exists():
+        print(f"submit-check: {path}: no such file or folder", file=sys.stderr)
+        return 2
     findings: list[Finding] = []
     texts: dict[str, str] = {}
     template = templates.detect("")
@@ -73,6 +76,17 @@ def run(argv: list[str] | None = None) -> int:
             return 2
         proj = read_project(main)
         texts = proj.texts
+        if "\\documentclass" not in next(iter(texts.values()), ""):
+            findings.append(
+                Finding(
+                    "not-main-file",
+                    "note",
+                    main.name,
+                    1,
+                    "no \\documentclass: this is not the main file, so only it (and what it \\inputs) was checked; give the "
+                    "project folder or its main .tex",
+                )
+            )
         root = proj.main.parent
         template = templates.detect("\n".join(texts.values()))
         if pdf is None and main.with_suffix(".pdf").is_file():

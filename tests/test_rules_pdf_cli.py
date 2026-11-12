@@ -139,3 +139,8 @@ Our code is at \url{https://github.com/adalovelace/engine}. \todo{fix}
     assert run([str(tmp_path), "--fail-on", "never"]) == 0
     assert run([str(tmp_path), "--venue", "nope"]) == 2
     assert run(["--list-venues"]) == 0
+    assert run([str(tmp_path / "nope")]) == 2
+    capsys.readouterr()
+    (tmp_path / "part.tex").write_text("A section \\todo{x}.", encoding="utf-8")
+    run([str(tmp_path / "part.tex"), "--format", "json", "--fail-on", "never"])
+    assert "not-main-file" in {f["kind"] for f in json.loads(capsys.readouterr().out)["findings"]}
