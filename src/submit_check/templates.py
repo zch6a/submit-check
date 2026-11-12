@@ -118,6 +118,9 @@ def _family(text: str, m: re.Match) -> Template | None:
             return Template("acl", _year(low), name, "review" if "review" in opts else "final", opts, line, pos)
         if low.startswith("eccv"):
             return Template("eccv", _year(low, opts), name, "review" if "review" in opts else "final", opts, line, pos)
+        if re.match(r"ijcai\d*$", low):
+            # the IJCAI kit: whether it hides the authors by itself is not known here, so the names are checked
+            return Template("ijcai", _year(low), name, "", opts, line, pos)
         if low == "acmart":
             # ACM's class (KDD, many ACM venues): `anonymous` hides the authors
             return Template("acm", None, name, "review" if "anonymous" in opts else "final", opts, line, pos)

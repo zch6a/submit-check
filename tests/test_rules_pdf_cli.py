@@ -103,6 +103,17 @@ def test_eccv_forbids_an_appendix_and_kdd_uses_acmart():
     assert rules.pick("kdd2026", t)[0].id == "kdd2026"
 
 
+def test_ijcai_template_mode_is_not_assumed():
+    from submit_check import anonymity
+
+    tex = r"\documentclass{article}\usepackage{ijcai26}\author{Jane Doe \\ MIT \\ jdoe@mit.edu}"
+    t = templates.detect(tex)
+    assert (t.venue, t.year, t.mode) == ("ijcai", 2026, "")
+    kinds = sorted(f.kind for f in anonymity.check({"main.tex": tex}, t))
+    assert kinds == ["author-names"]  # the names themselves, not a mode the template may not have
+    assert rules.pick(None, t)[0].id == "ijcai2026"
+
+
 def test_picking_the_venue_from_the_template():
     v, notes = rules.pick(None, templates.detect(r"\usepackage{icml2025}"))
     assert v.id == "icml2025" and notes == []

@@ -1,0 +1,19 @@
+# Every value below is taken from the official main-track call for papers; `source` says where, `verified` when it
+# was read.
+[venue]
+id = "ijcai2026"
+name = "IJCAI-ECAI 2026, main track"
+source = "https://2026.ijcai.org/ijcai-ecai-2026-call-for-papers-main-track/"
+verified = "2026-11-13"
+template = "ijcai"
+
+[pages]
+# "Papers must be no longer than 9 pages in total: 7 pages for the body of the paper and 2 pages for references."
+# (Appendices go in the supplementary material.)
+submission = 7
+not_counted = ["references", "ethics"]
+
+[anonymity]
+# "you should not include author names or affiliations in your submission"; "No acknowledgements or contribution
+# statements should be included in submissions"; "remove identifying information from the PDF metadata."
+required = true

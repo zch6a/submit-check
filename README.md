@@ -51,7 +51,7 @@ Summary: 4 ERRORS, 5 WARNINGS
 
 | | |
 |---|---|
-| **Template and mode** | NeurIPS, ICML, ICLR, CVPR/ICCV/WACV, ACL (ARR), ECCV, AAAI and ACM (`acmart`) templates, and whether they are in their anonymous mode (`[final]`, `[preprint]`, `[accepted]`, `\iclrfinalcopy` print the authors; `acmart` needs `anonymous`); the template matches the venue; a camera-ready is not left in review mode |
+| **Template and mode** | NeurIPS, ICML, ICLR, CVPR/ICCV/WACV, ACL (ARR), ECCV, AAAI, IJCAI and ACM (`acmart`) templates, and whether they are in their anonymous mode (`[final]`, `[preprint]`, `[accepted]`, `\iclrfinalcopy` print the authors; `acmart` needs `anonymous`); the template matches the venue; a camera-ready is not left in review mode |
 | **Anonymity** | names in `\author` when nothing hides them; acknowledgements (NeurIPS's `ack` environment is hidden by its template and passes); e-mail addresses; `\thanks`; links to the authors' own code or pages (a link to someone else's library passes; anonymous.4open.science passes); first-person self-citation; funding and grant numbers; the PDF's Author field and user paths in its metadata |
 | **The venue's rules** | content pages before the References heading against the limit (submission or camera-ready); required sections: the NeurIPS paper checklist, ICML's Impact Statement, ACL's Limitations section, AAAI's reproducibility checklist |
 | **The PDF** | Type 3 (bitmap) fonts, fonts not embedded, the paper size (AAAI: US Letter) |
@@ -76,6 +76,7 @@ the sentence of the official call for papers it comes from, the page's address, 
 | CVPR 2026 (`cvpr2026`) | 8 | references | | [author guidelines](https://cvpr.thecvf.com/Conferences/2026/AuthorGuidelines) |
 | ECCV 2026 (`eccv2026`) | 14 | references | no appendix in the main submission | [submission policies](https://eccv.ecva.net/Conferences/2026/SubmissionPolicies) |
 | KDD 2026, research track (`kdd2026`) | 8 (9) | references, appendix | ACM template, `anonymous` option | [call for papers](https://kdd2026.kdd.org/research-track-call-for-papers/) |
+| IJCAI-ECAI 2026, main track (`ijcai2026`) | 7 | references (2 pages), ethics | | [call for papers](https://2026.ijcai.org/ijcai-ecai-2026-call-for-papers-main-track/) |
 | AAAI-26 (`aaai2026`) | 7 | references, reproducibility checklist | reproducibility checklist; US Letter; Type 1/TrueType fonts | [submission instructions](https://aaai.org/conference/aaai/aaai-26/submission-instructions/) |
 
 What an official page does not state (CVPR's camera-ready length, for instance) is not in the rules. Rules change

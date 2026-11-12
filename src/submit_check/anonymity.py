@@ -132,7 +132,7 @@ def check(texts: dict[str, str], template: Template, mode: str = "submission") -
                 "submission is built in its anonymous mode",
             )
         )
-    elif template.venue and not template.hides_authors:
+    elif template.venue and template.mode and not template.hides_authors:
         out.append(
             Finding(
                 "template-mode",
@@ -146,13 +146,13 @@ def check(texts: dict[str, str], template: Template, mode: str = "submission") -
     for file, text in texts.items():
         blocks = _author_blocks(text)  # once: there may be many \thanks
         named = [(s, b) for s, b in blocks if _real_names(b)]
-        if not template.venue:  # a known template in final mode is reported once, above
+        if not template.venue or not template.mode:  # a known template in final mode is reported once, above
             for pos, _block in named:
                 out.append(Finding("author-names", "error", file, _line(text, pos), "the \\author block has names in it, and nothing hides them"))
         # What a review-mode template hides (the author commands and their e-mails, affiliations); with a known
         # template in final mode it is all printed, and reported once above; with no known template, the blocks with
         # names are reported above, and an e-mail in an "Anonymous" block is still a leak.
-        if template.hides_authors or template.venue:
+        if template.hides_authors or (template.venue and template.mode):
             exempt = [(s, s + len(b)) for s, b in _author_blocks(text, AUTHOR_COMMANDS)]
         else:
             exempt = [(s, s + len(b)) for s, b in named]
