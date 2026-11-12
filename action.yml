@@ -1,0 +1,52 @@
+name: submit-check
+description: Checks a LaTeX paper against a venue's submission rules on every push. Anonymity leaks, page limit, template mode, required sections, PDF fonts and metadata.
+author: zch6a
+branding:
+  icon: shield
+  color: purple
+inputs:
+  path:
+    description: The LaTeX project folder or its main .tex file (relative to the repository)
+    default: "."
+  venue:
+    description: 'The rules to check against, e.g. neurips2025, icml2025, iclr2026, acl-arr, cvpr2026, aaai2026 (default: from the template)'
+    default: ""
+  mode:
+    description: '"submission" (double-blind, default), "camera-ready" or "arxiv"'
+    default: submission
+  pdf:
+    description: The compiled PDF, to check the page limit, metadata and fonts (default the main file's .pdf, if it is in the repository)
+    default: ""
+  fail-on:
+    description: '"error" (default), "warning" or "never"'
+    default: error
+outputs:
+  report:
+    description: Path of the JSON report
+    value: ${{ steps.run.outputs.report }}
+runs:
+  using: composite
+  steps:
+    # The tool at this action's own ref; nothing from the paper's repository is executed.
+    - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3; it has no moving major tag
+    - id: run
+      shell: bash
+      env:
+        PAPER: ${{ inputs.path }}
+        VENUE: ${{ inputs.venue }}
+        MODE: ${{ inputs.mode }}
+        PDF: ${{ inputs.pdf }}
+        FAIL_ON: ${{ inputs.fail-on }}
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        report="$RUNNER_TEMP/submit-check.json"
+        args=(--mode "$MODE")
+        [ -n "$VENUE" ] && args+=(--venue "$VENUE")
+        [ -n "$PDF" ] && args+=(--pdf "$PDF")
+        set +e
+        uvx --from "$ACTION_PATH" submit-check "${args[@]}" --fail-on never --format md -- "$PAPER" >> "$GITHUB_STEP_SUMMARY"
+        uvx --from "$ACTION_PATH" submit-check "${args[@]}" --fail-on "$FAIL_ON" --format json -- "$PAPER" > "$report"
+        code=$?
+        set -e
+        echo "report=$report" >> "$GITHUB_OUTPUT"
+        exit $code

@@ -1,0 +1,41 @@
+% An example submission to ICML 2025 with planted problems, for trying submit-check:
+%   submit-check examples/paper                      (submission: double-blind)
+%   submit-check examples/paper --mode arxiv          (what the arXiv source would make public)
+% TODO(jd): ask Ada whether the 2023 numbers are final before we post this.
+\documentclass{article}
+\usepackage[accepted]{icml2025}
+\usepackage{hyperref}
+
+\icmltitlerunning{Sparse Mixture Adapters}
+
+\begin{document}
+\twocolumn[
+\icmltitle{Sparse Mixture Adapters for Low-Resource Translation}
+\icmlsetsymbol{equal}{*}
+\begin{icmlauthorlist}
+\icmlauthor{Jane Doe}{uni}
+\icmlauthor{Ada Lovelace}{uni}
+\end{icmlauthorlist}
+\icmlaffiliation{uni}{Example University}
+\icmlcorrespondingauthor{Jane Doe}{jane.doe@example-university.edu}
+\vskip 0.3in
+]
+
+\begin{abstract}
+We introduce sparse mixture adapters (SMA) for low-resource translation.
+\end{abstract}
+
+\section{Introduction}
+This paper extends our earlier conference paper~\cite{doe2023fast} with new languages.
+Our code is available at \url{https://github.com/janedoe42/sma}.
+
+\section{Results}
+SMA improves BLEU on all language pairs \todo{add the Nepali numbers}.
+
+\section*{Acknowledgements}
+We thank Charles Babbage for the engine. This work was supported by the National Science Foundation under
+grant no. 1234567.
+
+\bibliography{refs}
+\bibliographystyle{icml2025}
+\end{document}

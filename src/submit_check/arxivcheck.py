@@ -37,7 +37,9 @@ def check(files: list[Path], root: Path) -> list[Finding]:
         for n, line in enumerate(text.split("\n"), 1):
             m = re.search(r"(?<!\\)%(.*)$", line)
             if m and not EMPTY_COMMENT.match("%" + m.group(1)) and len(m.group(1).strip()) > 2:
-                comments.append((rel, n, m.group(1).strip(), n >= first_body_line))
+                note = m.group(1).strip()
+                # a note to a co-author is the authors' own wherever it is, preamble included
+                comments.append((rel, n, note, n >= first_body_line or bool(re.search(r"\b(?:TODO|FIXME|XXX)\b", note))))
         for m in re.finditer(r"\\iffalse\b", text):
             blocks.append((rel, text.count("\n", 0, m.start()) + 1))
     if comments:
@@ -53,7 +55,7 @@ def check(files: list[Path], root: Path) -> list[Finding]:
                 "warning" if body else "note",
                 shown[0][0],
                 shown[0][1],
-                f"{len(comments)} comment lines will be public with the source, {len(body)} of them in the paper's text "
+                f"{len(comments)} comment lines will be public with the source, {len(body)} of them the authors' own "
                 f"({len(prose)} notes in prose, e.g. {examples}); arxiv_latex_cleaner removes them",
             )
         )

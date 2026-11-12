@@ -1,0 +1,10 @@
+{
+  "name": "submit-check",
+  "description": "Check a LaTeX paper against a conference's submission rules before you submit: double-blind leaks, page limits, the template's mode, required sections, PDF fonts and metadata, leftover notes, and what an arXiv source would make public.",
+  "version": "0.1.0",
+  "author": { "name": "zch6a" },
+  "homepage": "https://github.com/zch6a/submit-check",
+  "repository": "https://github.com/zch6a/submit-check",
+  "license": "MIT",
+  "keywords": ["research", "latex", "double-blind", "anonymity", "submission", "neurips", "icml", "iclr", "acl", "claude-code"]
+}

@@ -94,6 +94,19 @@ def test_picking_the_venue_from_the_template():
     assert v.id == "neurips2025" and notes[0].kind == "rules-year"
 
 
+EXAMPLE = Path(__file__).resolve().parent.parent / "examples" / "paper"
+
+
+def test_the_example_paper(capsys):
+    assert run([str(EXAMPLE), "--format", "json"]) == 1
+    kinds = {f["kind"] for f in json.loads(capsys.readouterr().out)["findings"]}
+    assert {"template-mode", "email", "acknowledgements", "self-citation", "account-link", "todo", "funding", "required-section"} <= kinds
+    run([str(EXAMPLE), "--mode", "arxiv", "--format", "json"])
+    found = json.loads(capsys.readouterr().out)["findings"]
+    (c,) = [f for f in found if f["kind"] == "arxiv-comments"]
+    assert c["severity"] == "warning" and "TODO(jd)" in c["message"]  # a note to a co-author, even in the preamble
+
+
 def test_command_line(tmp_path, capsys):
     (tmp_path / "main.tex").write_text(
         r"""\documentclass{article}\usepackage{icml2025}\begin{document}
