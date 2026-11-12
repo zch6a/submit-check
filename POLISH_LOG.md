@@ -80,3 +80,8 @@
 - **代码**：anonymity.check 原来一个 100 行的函数，拆成模板模式、作者块、致谢、邮箱、链接、自引与资助几个小函数，共用一个“在不在某些区间里”的辅助；
   cli.py 里的终端和 Markdown 报告搬进 report.py（用脚本按 AST 搬，不手抄），cli.py 从 250 行降到 150 行。CONTRIBUTING 的源码表同步。
 - 拆完重测：37 个测试、mypy、ruff 全过；50 篇终稿 camera-ready 模式仍只剩 LDM 的 9 处 \todo，注入泄露 750/750，示例论文输出一字不变。
+
+## 第 5 轮打磨与发布（2026-11-13）
+
+- **文档对照行为**：README 规则那一行补上“不许出现的内容（ECCV 投稿正文里的附录）”；说明 ACM acmart 要用 --venue（一个模板对应几十个会议）；Action 示例改用 `@v0`。
+- **发布 v0.1.0**：CI 绿后打 tag，release 工作流（只读任务里测试、构建、取 CHANGELOG；写权限任务只调 gh）建了 GitHub Release（wheel + 源码包），v0 标签指向它。不发 PyPI。
