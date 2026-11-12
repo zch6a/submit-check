@@ -28,4 +28,9 @@
     现在 camera-ready 模式下只剩 LDM 的 9 处 \todo{…}——它把 \todo 定义成红字打印，确实留在了 arXiv 版里。
   - arXiv 模式：注释一开始举的例子全是模板自带的（“allow utf-8 input”）→ 导言区的注释算模板的，只拿正文里的注释举例和定级。现在举出来的是作者真正的笔记，例如 Transformer 源码里的 “TODO(noam): update re…”。
   - 注入匿名泄露（五类、每类三种写法，插在正文段落之间）：750 处全部在注入的那一行查出。
+  - 页数：5 篇真实论文的 PDF（Transformer、LoRA、DPO、LLaMA、DINOv2）上 References 标题都找对了页，紧跟在致谢或结论之后、第一条参考文献之前；
+    DPO 的标题在第 11 页顶部 → 正文 10 页，正好是 NeurIPS 2023 终稿的 9+1 页。PDF 测完已删。
+- **示例论文** examples/paper（ICML 2025，故意埋了问题）：模板在 [accepted] 模式、邮箱、致谢、第一人称自引、自己代码的链接、\todo、资助、缺 Impact Statement 全部查出；
+  arXiv 模式下导言区的 “TODO(jd): ask Ada …” 一开始被当成模板注释 → 带 TODO/FIXME/XXX 的注释不论在哪都算作者自己的。
+- **GitHub Action**（composite，只读，结果写进任务摘要，JSON 报告作输出）、**CI**（三系统 × 两个 Python，pytest/ruff/mypy，再用 action 跑示例并断言八类问题都在）、**Agent Skill**。17 个测试。
 - **命令行**：`--venue`、`--mode submission|camera-ready|arxiv`、`--pdf`（默认找主文件同名 PDF）、`--list-venues`（每条规则和来源）、终端/JSON/Markdown。14 个测试（测试用的 PDF 在测试里手写生成，不用真实论文）。
