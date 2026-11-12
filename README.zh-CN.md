@@ -21,6 +21,11 @@
 挂在作者自己账号下的 GitHub 链接、ACL 投稿缺了 Limitations 一节、PDF 元数据里有作者名、多出来的第十页。
 下面是 submit-check 在[示例论文](examples/paper/main.tex)上的真实输出：
 
+<p align="center"><img src="docs/demo.png" alt="submit-check 在示例论文上的输出：模板处于终稿模式、邮箱、致谢、缺 Impact Statement、自引、自己代码的链接、待办标记和资助信息" width="900"></p>
+
+<details>
+<summary>同一输出（文字版）</summary>
+
 ```text
 $ submit-check examples/paper
 submit-check 0.1.0 · examples/paper: submission, ICML 2025 rules, template icml2025 (final mode)
@@ -37,6 +42,8 @@ WARNING  main.tex:37  funding information in a submission: "grant no. 1234567"
 
 Summary: 4 ERRORS, 5 WARNINGS
 ```
+
+</details>
 
 ## 查什么
 

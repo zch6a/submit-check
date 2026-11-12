@@ -23,6 +23,11 @@ on, an acknowledgements section naming the lab, "as we showed in our previous wo
 author's own account, a missing Limitations section at ACL, the author's name in the PDF's metadata, a tenth page.
 This is submit-check's real output on [the example paper](examples/paper/main.tex):
 
+<p align="center"><img src="docs/demo.png" alt="submit-check's output on the example paper: the template in final mode, an e-mail address, acknowledgements, a missing Impact Statement, a self-citation, an own-code link, a to-do note and funding lines" width="900"></p>
+
+<details>
+<summary>The same, as text</summary>
+
 ```text
 $ submit-check examples/paper
 submit-check 0.1.0 · examples/paper: submission, ICML 2025 rules, template icml2025 (final mode)
@@ -39,6 +44,8 @@ WARNING  main.tex:37  funding information in a submission: "grant no. 1234567"
 
 Summary: 4 ERRORS, 5 WARNINGS
 ```
+
+</details>
 
 ## What it checks
 
