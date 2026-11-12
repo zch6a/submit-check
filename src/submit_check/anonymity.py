@@ -114,102 +114,107 @@ def _real_names(block: str) -> bool:
     return bool(words) and not ANONYMOUS.search(words)
 
 
+Spans = list[tuple[int, int]]
+
+
+def _inside(pos: int, spans: Spans) -> bool:
+    return any(s <= pos < e for s, e in spans)
+
+
+def _template_mode(template: Template, main_file: str) -> list[Finding]:
+    """A known template in a mode that prints the authors (or loaded behind a condition, where the mode is unknown)."""
+    if template.venue and template.conditional:
+        msg = (
+            f"the {template.package} template is loaded inside a condition (\\iftoggle, \\if...): check that the "
+            "submission is built in its anonymous mode"
+        )
+        return [Finding("template-mode", "note", main_file, template.line, msg)]
+    if template.venue and template.mode and not template.hides_authors:
+        msg = (
+            f"the {template.package} template is in {template.mode} mode ({', '.join(template.options) or 'no review option'}): "
+            "it prints the authors' names; use its anonymous submission mode"
+        )
+        return [Finding("template-mode", "error", main_file, template.line, msg)]
+    return []
+
+
+def _authors(file: str, text: str, template: Template) -> tuple[list[Finding], Spans]:
+    """Names in \\author when nothing hides them, \\thanks; and the spans whose addresses and links are not to be
+    reported again: what a review-mode template hides, what a known template in final mode prints (reported once, as
+    its mode), or, with no known template, the author blocks already reported for their names (an e-mail in an
+    "Anonymous" block is still a leak)."""
+    out: list[Finding] = []
+    blocks = _author_blocks(text)  # once: there may be many \\thanks
+    named = [(s, b) for s, b in blocks if _real_names(b)]
+    known_mode = bool(template.venue and template.mode)
+    if not known_mode:
+        for pos, _block in named:
+            out.append(Finding("author-names", "error", file, _line(text, pos), "the \\author block has names in it, and nothing hides them"))
+    exempt = [(s, s + len(b)) for s, b in (_author_blocks(text, AUTHOR_COMMANDS) if template.hides_authors or known_mode else named)]
+    for m in re.finditer(r"\\thanks\s*\{", text):
+        if not template.hides_authors or not any(s <= m.start() < s + len(b) for s, b in blocks):
+            out.append(
+                Finding("thanks", "warning", file, _line(text, m.start()), "\\thanks{...} (funding, affiliation or contact) gives the authors away")
+            )
+    return out, exempt
+
+
+def _acknowledgements(file: str, text: str, template: Template) -> list[Finding]:
+    advice = " or move them into the template's ack environment, which is hidden in review mode" if template.venue == "neurips" else ""
+    msg = "acknowledgements in a submission (they name people, groups and grants): remove them until the camera-ready" + advice
+    return [Finding("acknowledgements", "error", file, _line(text, m.start()), msg) for m in ACK_HEADING.finditer(text)]
+
+
+def _emails(file: str, text: str, skip: Spans) -> list[Finding]:
+    return [
+        Finding("email", "error", file, _line(text, m.start()), f"an e-mail address in the text: {m.group(0)}")
+        for m in EMAIL.finditer(text)
+        if not _inside(m.start(), skip)
+    ]
+
+
+def _links(file: str, text: str, skip: Spans) -> list[Finding]:
+    """Links to an account or a personal page that the text offers as the authors' own."""
+    out = []
+    for m in ACCOUNT_LINK.finditer(text):
+        around = text[max(0, m.start() - 40) : m.end() + 40]
+        if ANONYMISED.search(around) or _inside(m.start(), skip):
+            continue
+        sentence_start = max(0, text.rfind(". ", 0, m.start()), text.rfind("\n\n", 0, m.start()), m.start() - 160)
+        before = text[sentence_start : m.start()]
+        if not OWN.search(before + " " + text[m.end() : m.end() + 60]) and not OWN_LABEL.search(re.sub(r"https?://\S*$", "", before)):
+            continue  # someone else's code or page, cited
+        msg = f"a link to an account or a personal page: {m.group(0)} (use an anonymised copy, e.g. anonymous.4open.science)"
+        out.append(Finding("account-link", "warning", file, _line(text, m.start()), msg))
+    return out
+
+
+def _phrases(file: str, text: str, skip: Spans) -> list[Finding]:
+    """First-person self-citation and funding lines."""
+    out = []
+    for m in SELF_CITE.finditer(text):
+        if not _inside(m.start(), skip):
+            msg = f'"{m.group(0)}": citing your own work in the first person tells reviewers who you are; cite it in the third person'
+            out.append(Finding("self-citation", "warning", file, _line(text, m.start()), msg))
+    for m in FUNDING.finditer(text):
+        if not _inside(m.start(), skip):
+            out.append(Finding("funding", "warning", file, _line(text, m.start()), f'funding information in a submission: "{m.group(0)}"'))
+    return out
+
+
 def check(texts: dict[str, str], template: Template, mode: str = "submission") -> list[Finding]:
     """Findings for a project's texts (file -> text without comments). `mode` is "submission" (double-blind),
     "camera-ready" or "arxiv": only a submission must be anonymous."""
     if mode != "submission":
         return []
-    out: list[Finding] = []
-    main_file = template.file or next(iter(texts), "")
-    if template.venue and template.conditional:
-        out.append(
-            Finding(
-                "template-mode",
-                "note",
-                main_file,
-                template.line,
-                f"the {template.package} template is loaded inside a condition (\\iftoggle, \\if...): check that the "
-                "submission is built in its anonymous mode",
-            )
-        )
-    elif template.venue and template.mode and not template.hides_authors:
-        out.append(
-            Finding(
-                "template-mode",
-                "error",
-                main_file,
-                template.line,
-                f"the {template.package} template is in {template.mode} mode ({', '.join(template.options) or 'no review option'}): "
-                "it prints the authors' names; use its anonymous submission mode",
-            )
-        )
+    out = _template_mode(template, template.file or next(iter(texts), ""))
     for file, text in texts.items():
-        blocks = _author_blocks(text)  # once: there may be many \thanks
-        named = [(s, b) for s, b in blocks if _real_names(b)]
-        if not template.venue or not template.mode:  # a known template in final mode is reported once, above
-            for pos, _block in named:
-                out.append(Finding("author-names", "error", file, _line(text, pos), "the \\author block has names in it, and nothing hides them"))
-        # What a review-mode template hides (the author commands and their e-mails, affiliations); with a known
-        # template in final mode it is all printed, and reported once above; with no known template, the blocks with
-        # names are reported above, and an e-mail in an "Anonymous" block is still a leak.
-        if template.hides_authors or (template.venue and template.mode):
-            exempt = [(s, s + len(b)) for s, b in _author_blocks(text, AUTHOR_COMMANDS)]
-        else:
-            exempt = [(s, s + len(b)) for s, b in named]
-        for m in re.finditer(r"\\thanks\s*\{", text):
-            if not template.hides_authors or not any(s <= m.start() < s + len(b) for s, b in blocks):
-                out.append(
-                    Finding(
-                        "thanks", "warning", file, _line(text, m.start()), "\\thanks{...} (funding, affiliation or contact) gives the authors away"
-                    )
-                )
+        found, exempt = _authors(file, text, template)
+        out += found
+        # NeurIPS's ack environment is hidden by its template in review mode, with what is in it
         hidden = [(m.start(), text.find("\\end{ack}", m.start())) for m in NEURIPS_ACK.finditer(text)] if template.venue == "neurips" else []
-        for m in ACK_HEADING.finditer(text):
-            out.append(
-                Finding(
-                    "acknowledgements",
-                    "error",
-                    file,
-                    _line(text, m.start()),
-                    "acknowledgements in a submission (they name people, groups and grants): remove them until the camera-ready"
-                    + (" or move them into the template's ack environment, which is hidden in review mode" if template.venue == "neurips" else ""),
-                )
-            )
-        for m in EMAIL.finditer(text):
-            if any(s <= m.start() < e for s, e in exempt + hidden):
-                continue
-            out.append(Finding("email", "error", file, _line(text, m.start()), f"an e-mail address in the text: {m.group(0)}"))
-        for m in ACCOUNT_LINK.finditer(text):
-            around = text[max(0, m.start() - 40) : m.end() + 40]
-            if ANONYMISED.search(around) or any(s <= m.start() < e for s, e in hidden + exempt):
-                continue
-            sentence_start = max(0, text.rfind(". ", 0, m.start()), text.rfind("\n\n", 0, m.start()), m.start() - 160)
-            before = text[sentence_start : m.start()]
-            if not OWN.search(before + " " + text[m.end() : m.end() + 60]) and not OWN_LABEL.search(re.sub(r"https?://\S*$", "", before)):
-                continue  # someone else's code or page, cited
-            out.append(
-                Finding(
-                    "account-link",
-                    "warning",
-                    file,
-                    _line(text, m.start()),
-                    f"a link to an account or a personal page: {m.group(0)} (use an anonymised copy, e.g. anonymous.4open.science)",
-                )
-            )
-        for m in SELF_CITE.finditer(text):
-            if any(s <= m.start() < e for s, e in hidden):
-                continue
-            out.append(
-                Finding(
-                    "self-citation",
-                    "warning",
-                    file,
-                    _line(text, m.start()),
-                    f'"{m.group(0)}": citing your own work in the first person tells reviewers who you are; cite it in the third person',
-                )
-            )
-        for m in FUNDING.finditer(text):
-            if any(s <= m.start() < e for s, e in hidden):
-                continue
-            out.append(Finding("funding", "warning", file, _line(text, m.start()), f'funding information in a submission: "{m.group(0)}"'))
+        out += _acknowledgements(file, text, template)
+        out += _emails(file, text, exempt + hidden)
+        out += _links(file, text, hidden + exempt)
+        out += _phrases(file, text, hidden)
     return out

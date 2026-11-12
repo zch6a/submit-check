@@ -53,4 +53,5 @@ papers' sources or PDFs.
 | `rules.py`, `rules/*.toml` | the venues' rules and the checks that need them |
 | `pdfcheck.py` | pages, metadata, fonts, paper size |
 | `arxivcheck.py` | what an arXiv source would make public |
-| `cli.py` | the command line and the reports |
+| `report.py` | the terminal and Markdown reports |
+| `cli.py` | the command line (and the JSON report) |
