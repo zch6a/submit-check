@@ -32,7 +32,7 @@ submit-check 0.1.0 · examples/paper: submission, ICML 2025 rules, template icml
 
 ERROR    main.tex:1  ICML 2025 requires an Impact Statement section, and it is not in the paper (https://icml.cc/Conferences/2025/CallForPapers)
 ERROR    main.tex:6  the icml2025 template is in final mode (accepted): it prints the authors' names; use its anonymous submission mode
-ERROR    main.tex:20  an e-mail address in the text: jane.doe@example-university.edu
+ERROR    main.tex:30  an e-mail address in the text: jane.doe@example-university.edu
 ERROR    main.tex:35  acknowledgements in a submission (they name people, groups and grants): remove them until the camera-ready
 WARNING  main.tex:29  "extends our earlier conference paper": citing your own work in the first person tells reviewers who you are; cite it in the third person
 WARNING  main.tex:30  a link to an account or a personal page: https://github.com/janedoe42 (use an anonymised copy, e.g. anonymous.4open.science)

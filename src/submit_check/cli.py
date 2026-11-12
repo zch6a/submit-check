@@ -88,7 +88,7 @@ def run(argv: list[str] | None = None) -> int:
                 )
             )
         root = proj.main.parent
-        template = templates.detect("\n".join(texts.values()))
+        template = templates.detect_project(texts)
         if pdf is None and main.with_suffix(".pdf").is_file():
             pdf = main.with_suffix(".pdf")
     try:
@@ -173,4 +173,9 @@ def markdown(findings: list[Finding], header: dict, venue) -> str:
 
 
 def main() -> None:
+    # The reports hold non-ASCII text (names, zero-width spaces that break links in Markdown): a redirected stdout on
+    # Windows (cp1252) must not crash on them.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
     sys.exit(run())

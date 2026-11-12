@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from paper_proof.latex import read_source
+from paper_proof.latex import read_source, strip_comments
 from paper_proof.numbers import Finding
 
 # Comment lines that say nothing (separators, template boilerplate) are not worth reporting.
@@ -20,6 +20,7 @@ BOILERPLATE = re.compile(
     r"if you use|attempt to make hyperref|^\s*file \S+\.tex|based on the style files",
     re.I,
 )
+COMMENT = re.compile(r"(?<!\\)((?:\\\\)*)%(.*)$")
 EMPTY_COMMENT = re.compile(r"^\s*%+[\s%=\-*#~_.]*$|^\s*%\s*!TEX|^\s*%\s*auto-ignore", re.I)
 
 
@@ -35,13 +36,15 @@ def check(files: list[Path], root: Path) -> list[Finding]:
         begin = re.search(r"^[^%\n]*\\begin\{document\}", text, re.M)
         first_body_line = text.count("\n", 0, begin.start()) + 1 if begin else 1
         for n, line in enumerate(text.split("\n"), 1):
-            m = re.search(r"(?<!\\)%(.*)$", line)
-            if m and not EMPTY_COMMENT.match("%" + m.group(1)) and len(m.group(1).strip()) > 2:
-                note = m.group(1).strip()
+            # a % after an even number of backslashes starts a comment (\% is a percent sign, \\% a line break and one)
+            m = COMMENT.search(line)
+            if m and not EMPTY_COMMENT.match("%" + m.group(2)) and len(m.group(2).strip()) > 2:
+                note = m.group(2).strip()
                 # a note to a co-author is the authors' own wherever it is, preamble included
                 comments.append((rel, n, note, n >= first_body_line or bool(re.search(r"\b(?:TODO|FIXME|XXX)\b", note))))
-        for m in re.finditer(r"\\iffalse\b", text):
-            blocks.append((rel, text.count("\n", 0, m.start()) + 1))
+        bare = strip_comments(text)  # "% \iffalse" in a comment is no block; lines are kept, so line numbers hold
+        for m in re.finditer(r"\\iffalse\b", bare):
+            blocks.append((rel, bare.count("\n", 0, m.start()) + 1))
     if comments:
         # The template's own comments ("allow utf-8 input") are harmless; notes in prose and commented-out text are
         # what people regret publishing: those are shown first, and only they make it a warning.

@@ -41,8 +41,8 @@ runs:
       run: |
         report="$RUNNER_TEMP/submit-check.json"
         args=(--mode "$MODE")
-        [ -n "$VENUE" ] && args+=(--venue "$VENUE")
-        [ -n "$PDF" ] && args+=(--pdf "$PDF")
+        [ -n "$VENUE" ] && args+=("--venue=$VENUE")
+        [ -n "$PDF" ] && args+=("--pdf=$PDF")
         set +e
         uvx --from "$ACTION_PATH" submit-check "${args[@]}" --fail-on never --format md -- "$PAPER" >> "$GITHUB_STEP_SUMMARY"
         uvx --from "$ACTION_PATH" submit-check "${args[@]}" --fail-on "$FAIL_ON" --format json -- "$PAPER" > "$report"

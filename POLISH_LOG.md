@@ -45,4 +45,22 @@
   改了两处：不存在的路径直接说“没有这个文件或文件夹”；片段文件照查但提示“这不是主文件，只查了它和它 \input 的”。
 - 独立代码审查（子代理，只读、不联网）进行中。19 个测试。
 - README 顶部加演示图 docs/demo.png（scripts/render_demo.py：真实彩色输出转 HTML、无头 Chrome 渲染，不截屏），文字版收进折叠块。
+- **独立代码审查**（子代理，只读、不联网）找到 15 个问题、复现 14 个，全部修好，每个都有回归测试（tests/test_review_regressions.py，16 个）：
+  1. **页数把不计入的章节也算进去了**：ICML 的 Impact Statement、ACL 的 Limitations 在 References 之前，正好卡在上限的论文会被误报超页 → 正文算到第一个“不计入”章节为止。
+  2. 图（form XObject）里的 Type 3 字体没查到（matplotlib 的图就是这样）→ 递归查 XObject。
+  3. **mAP@0.5、AP@0.75、transformers@4.36.2 被当成邮箱**（检测论文几乎都有）→ 邮箱要求以字母顶级域名结尾；ICML 的 \icmlcorrespondingauthor、AAAI 的 \affiliations、acmart 的 \email 在评审模式下由模板隐藏，不报；不认识的模板时“Anonymous”作者块里的邮箱照样报。
+  4. Windows 上输出被重定向（cp1252）时，Markdown 报告里的零宽空格让程序崩溃（Action 在 windows 上会挂）→ 两个工具都把 stdout 改成 UTF-8；用 cp1252 子进程测过三种格式。
+  5. 平方级正则：*.github.io 那一支没锚定（20 万个字符要 70 秒）、`\usepackage[` 重复 2 万次 12.8 秒、未闭合的 \author{ 重复 4000 次 3.8 秒、TODO 行数翻倍耗时翻四倍 → 都加了边界或改成线性。
+  6. arXiv 模式仍按会议页数报超页 → arXiv 版不套会议规则。
+  7. 模板写在 \input 的文件里时，报的文件和行号是主文件的 → 按文件识别模板。
+  8. 奇怪的 PDF（/Info 不是字典、没有 MediaBox、MediaBox 坐标为负）会崩溃或量错纸张 → 都兜住，纸张用宽高。
+  9. \ifcamera\iclrfinalcopy\fi 这种开关后面的终稿模式被当真 → 算“条件加载”。
+  10. “As we previously showed in Section 3”“our previous results in Table 2”被当成自引；“the ResNet implementation available at github.com/pytorch/vision”被当成自己的代码 → 这类说法后面要紧跟 \cite 才算；“available at”单独不再算“自己的”。
+  11. 漏报：\paragraph{Acknowledgments.}、“Acknowledgments and Disclosure of Funding”、“Code: \url{…}”、\PassOptionsToPackage{final}{neurips_2025} → 都能查出。
+  12. arXiv 注释：`\\%` 之后的注释没算、注释里的 “% \iffalse” 被当成 \iffalse 块 → 改用偶数个反斜杠的规则、在去掉注释的文本里找 \iffalse。
+  13. 选错规则：ECCV 的 ID=12345 被当成年份 2045 → 认 year= 选项；acmart 是 ACM 几十个会议共用的，不再默认套 KDD，要用 --venue；EMNLP 2025 这类近年的 ACL 系模板直接用 ARR 规则（老模板仍按“新规则只给提示”，因为不知道当年有没有这条要求）。
+  14. References 标题：伪小型大写（“R EFERENCES”）找不到、目录页里的“References”被当成标题、页眉占一行时短页多算一页 → 都修好。
+  15. 用 \newcommand* 或 \def 定义成空的 \todo 仍被报 → 认出来。
+  另：Action 改用 `--pdf=$PDF` / `--venue=$VENUE`，以 “-” 开头的值不会被当成选项。
+- 修完重测：50 篇终稿 camera-ready 模式仍只剩 LDM 的 9 处 \todo；注入泄露 750/750。示例论文的邮箱一条从第 20 行（模板终稿模式下本就会印出、已由模板那条覆盖）变成正文第 30 行，README 输出、演示图和社交预览图随之更新。35 个测试（3.10 / 3.13）。
 - **命令行**：`--venue`、`--mode submission|camera-ready|arxiv`、`--pdf`（默认找主文件同名 PDF）、`--list-venues`（每条规则和来源）、终端/JSON/Markdown。14 个测试（测试用的 PDF 在测试里手写生成，不用真实论文）。

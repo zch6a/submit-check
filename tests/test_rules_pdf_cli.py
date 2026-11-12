@@ -58,18 +58,18 @@ def test_page_limit_counts_pages_before_the_references(tmp_path):
     ok = make_pdf(tmp_path / "q.pdf", body[:8] + [["References", "[1] A paper."]])
     assert not [x for x in pdfcheck.check(ok, ICML, "submission") if x.kind == "page-limit"]
     # camera-ready allows one page more
-    nine = make_pdf(tmp_path / "r.pdf", body + [["References"]])
+    nine = make_pdf(tmp_path / "r.pdf", body + [["References", "[1] A paper, 2020."]])
     assert not [x for x in pdfcheck.check(nine, ICML, "camera-ready") if x.kind == "page-limit"]
 
 
 def test_metadata_fonts_and_paper_size(tmp_path):
     aaai = rules.all_venues()["aaai2026"]
-    pdf = make_pdf(tmp_path / "m.pdf", [["References"]], author="Ada Lovelace", font="Type3", size=(595, 842))
+    pdf = make_pdf(tmp_path / "m.pdf", [["References", "[1] A paper, 2020."]], author="Ada Lovelace", font="Type3", size=(595, 842))
     found = {f.kind: f for f in pdfcheck.check(pdf, aaai, "submission")}
     assert "Ada Lovelace" in found["pdf-metadata"].message
     assert found["type3-fonts"].severity == "error"  # AAAI asks for Type 1 or TrueType
     assert "wants letter" in found["paper-size"].message
-    plain = make_pdf(tmp_path / "n.pdf", [["References"]])
+    plain = make_pdf(tmp_path / "n.pdf", [["References", "[1] A paper, 2020."]])
     assert "fonts-not-embedded" in {f.kind for f in pdfcheck.check(plain, aaai, "camera-ready")}
     assert "pdf-metadata" not in {f.kind for f in pdfcheck.check(pdf, aaai, "camera-ready")}  # names are fine then
 
@@ -98,8 +98,9 @@ def test_eccv_forbids_an_appendix_and_kdd_uses_acmart():
     t = templates.detect(kdd)
     assert (t.venue, t.mode) == ("acm", "review")
     assert templates.detect(r"\documentclass[sigconf]{acmart}").mode == "final"
-    v, _ = rules.pick(None, t)
-    assert v.id == "kdd2026"
+    v, notes = rules.pick(None, t)  # acmart serves many ACM venues: --venue decides
+    assert v is None and notes[0].kind == "rules-year"
+    assert rules.pick("kdd2026", t)[0].id == "kdd2026"
 
 
 def test_picking_the_venue_from_the_template():
@@ -130,7 +131,7 @@ Our code is at \url{https://github.com/adalovelace/engine}. \todo{fix}
 \end{document}""",
         encoding="utf-8",
     )
-    make_pdf(tmp_path / "main.pdf", [["Intro"], ["References"]], author="Ada")
+    make_pdf(tmp_path / "main.pdf", [["Intro"], ["References", "[1] A paper, 2020."]], author="Ada")
     code = run([str(tmp_path), "--format", "json"])
     data = json.loads(capsys.readouterr().out)
     assert data["venue"] == "icml2025" and data["template_mode"] == "review" and data["pdf"].endswith("main.pdf")

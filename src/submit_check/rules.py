@@ -90,10 +90,20 @@ def pick(venue_id: str | None, template: Template) -> tuple[Venue | None, list[F
         if venue_id not in venues:
             raise KeyError(f"no rules for {venue_id!r}; known: {', '.join(sorted(venues))}")
         return venues[venue_id], notes
+    if template.venue == "acm":
+        # ACM's class serves dozens of venues: which rules apply cannot be told from it
+        notes.append(
+            Finding("rules-year", "note", template.file, template.line, "an ACM template (acmart): pass --venue (e.g. kdd2026) to check its rules")
+        )
+        return None, notes
     same = [v for v in venues.values() if v.template == template.venue]
     if not same:
         return None, notes
-    exact = [v for v in same if v.year == template.year]
+    # Rules for that year; or rules with no year (ACL Rolling Review: ACL, EMNLP, NAACL), which hold for a recent template
+    # (or one with no year); an older template (acl2019) may predate them, as with any other year's rules.
+    exact = [v for v in same if v.year == template.year] or [
+        v for v in same if v.year is None and (template.year is None or template.year >= int(v.verified[:4]) - 1)
+    ]
     if exact:
         return exact[0], notes
     newest = max(same, key=lambda v: v.year or 0)
@@ -101,7 +111,7 @@ def pick(venue_id: str | None, template: Template) -> tuple[Venue | None, list[F
         Finding(
             "rules-year",
             "note",
-            "",
+            template.file,
             template.line,
             f"no rules for {template.package}; checked against {newest.name} ({newest.source}): pass --venue if that is wrong",
         )
@@ -109,12 +119,12 @@ def pick(venue_id: str | None, template: Template) -> tuple[Venue | None, list[F
     return newest, notes
 
 
-HEADING = re.compile(r"\\(?:section|subsection|paragraph|chapter)\*?\s*(?:\[[^\]]*\])?\s*\{([^}]*)\}")
+HEADING = re.compile(r"\\(?:section|subsection|paragraph|chapter)\*?\s*(?:\[[^\]\n]{0,200}\])?\s*\{([^}\n]{0,300})\}")
 
 
 def check(texts: dict[str, str], venue: Venue, template: Template, mode: str) -> list[Finding]:
     out: list[Finding] = []
-    main_file = next(iter(texts), "")
+    main_file = template.file or next(iter(texts), "")
     if venue.template and template.venue and template.venue != venue.template:
         out.append(
             Finding(
