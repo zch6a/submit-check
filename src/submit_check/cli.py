@@ -26,7 +26,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--version", action="version", version=f"submit-check {__version__}")
     p.add_argument("paper", nargs="?", metavar="PAPER", help="the LaTeX project folder or its main .tex file (or only a PDF)")
-    p.add_argument("--venue", help="the rules to check against (see --list-venues); default: from the template")
+    p.add_argument(
+        "--venue", help=f"the rules to check against: {', '.join(sorted(rules.all_venues()))} (see --list-venues); default: from the template"
+    )
     p.add_argument(
         "--mode",
         choices=["submission", "camera-ready", "arxiv"],
@@ -34,9 +36,16 @@ def build_parser() -> argparse.ArgumentParser:
         help="submission (double-blind, default), camera-ready, or arxiv (the source will be public)",
     )
     p.add_argument("--pdf", type=Path, help="the compiled PDF (default: the main file's .pdf, if there is one)")
-    p.add_argument("--format", choices=["text", "json", "md"], default="text")
+    p.add_argument(
+        "--format",
+        choices=["text", "json", "md"],
+        default="text",
+        help="report format: text (default), json (every finding with file and line), md (a table for a pull request)",
+    )
     p.add_argument("--fail-on", choices=["error", "warning", "never"], default="error", help="when to exit 1 (default: error)")
-    p.add_argument("--color", choices=["auto", "always", "never"], default="auto")
+    p.add_argument(
+        "--color", choices=["auto", "always", "never"], default="auto", help="colours in the text report (default: auto, only on a terminal)"
+    )
     p.add_argument("--list-venues", action="store_true", help="list the venues with rules, and where each rule comes from")
     return p
 
