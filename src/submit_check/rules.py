@@ -67,7 +67,9 @@ def _venue(data: dict) -> Venue:
 
 
 def all_venues() -> dict[str, Venue]:
-    """>>> sorted(all_venues())[:3]
+    """Every venue in rules/, by id.
+
+    >>> sorted(all_venues())[:3]
     ['aaai2026', 'acl-arr', 'cvpr2026']
     """
     out = {}
