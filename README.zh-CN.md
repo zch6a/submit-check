@@ -51,7 +51,7 @@ Summary: 4 ERRORS, 5 WARNINGS
 |---|---|
 | **模板与模式** | 认得 NeurIPS、ICML、ICLR、CVPR/ICCV/WACV、ACL（ARR）、ECCV、AAAI、IJCAI 和 ACM（`acmart`）的模板，看它们是否处在匿名模式（`[final]`、`[preprint]`、`[accepted]`、`\iclrfinalcopy` 都会印出作者）；模板与会议是否一致；终稿是否还停在评审模式 |
 | **匿名** | 没有东西隐藏时 `\author` 里的真名；致谢（NeurIPS 的 `ack` 环境由模板自动隐藏，不报）；邮箱；`\thanks`；指向作者自己代码或主页的链接（指向别人的库不报，anonymous.4open.science 不报）；第一人称自引；资助与基金号；PDF 元数据里的作者名和带用户名的路径 |
-| **会议规定** | References 之前的正文页数对照上限（投稿或终稿）；必需章节：NeurIPS 的 paper checklist、ICML 的 Impact Statement、ACL 的 Limitations、AAAI 的复现清单 |
+| **会议规定** | References 之前的正文页数对照上限（投稿或终稿）；必需章节：NeurIPS 的 paper checklist、ICML 的 Impact Statement、ACL 的 Limitations、AAAI 的复现清单；不许出现的内容（ECCV 投稿正文里的附录） |
 | **PDF** | Type 3（位图）字体、未嵌入的字体、纸张大小（AAAI：US Letter） |
 | **残留** | `\todo{}`、`\fixme{}`、正文里的 TODO / FIXME / TBD、“[citation needed]”、“???”（被定义成什么都不印的 `\todo` 不报） |
 | **arXiv**（`--mode arxiv`） | arXiv 会公开你的源码：会被公开的注释行（先列作者自己的笔记，不是模板的）、`\iffalse` 块、论文没用到的 `.tex` 文件 |
@@ -77,7 +77,7 @@ Summary: 4 ERRORS, 5 WARNINGS
 
 官方页面没写的（比如 CVPR 终稿页数）规则里就没有。规则每年都变：修正一条只需一个改值、附原句和出处的 PR；加一个会议就是加一个文件（见 [CONTRIBUTING](CONTRIBUTING.md)）。
 
-不指定 `--venue` 时由模板决定用哪套规则。模板较旧（如 `neurips_2023`）时用该会议最新的规则并在报告里说明；这时新规则要求的章节缺失只给提示。
+不指定 `--venue` 时由模板决定用哪套规则（ACM 的 `acmart` 要用 `--venue`：一个模板对应几十个会议）。模板较旧（如 `neurips_2023`）时用该会议最新的规则并在报告里说明；这时新规则要求的章节缺失只给提示。
 
 ## 准确度
 
@@ -134,7 +134,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: zch6a/submit-check@main
+      - uses: zch6a/submit-check@v0
         with:
           path: paper
           venue: neurips2025   # 可选，不写就看模板

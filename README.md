@@ -53,7 +53,7 @@ Summary: 4 ERRORS, 5 WARNINGS
 |---|---|
 | **Template and mode** | NeurIPS, ICML, ICLR, CVPR/ICCV/WACV, ACL (ARR), ECCV, AAAI, IJCAI and ACM (`acmart`) templates, and whether they are in their anonymous mode (`[final]`, `[preprint]`, `[accepted]`, `\iclrfinalcopy` print the authors; `acmart` needs `anonymous`); the template matches the venue; a camera-ready is not left in review mode |
 | **Anonymity** | names in `\author` when nothing hides them; acknowledgements (NeurIPS's `ack` environment is hidden by its template and passes); e-mail addresses; `\thanks`; links to the authors' own code or pages (a link to someone else's library passes; anonymous.4open.science passes); first-person self-citation; funding and grant numbers; the PDF's Author field and user paths in its metadata |
-| **The venue's rules** | content pages before the References heading against the limit (submission or camera-ready); required sections: the NeurIPS paper checklist, ICML's Impact Statement, ACL's Limitations section, AAAI's reproducibility checklist |
+| **The venue's rules** | content pages before the References heading against the limit (submission or camera-ready); required sections: the NeurIPS paper checklist, ICML's Impact Statement, ACL's Limitations section, AAAI's reproducibility checklist; what must not be there (an appendix in an ECCV submission) |
 | **The PDF** | Type 3 (bitmap) fonts, fonts not embedded, the paper size (AAAI: US Letter) |
 | **Leftovers** | `\todo{}`, `\fixme{}`, TODO / FIXME / TBD in the text, "[citation needed]", "???" (a `\todo` defined to print nothing passes) |
 | **arXiv** (`--mode arxiv`) | arXiv publishes your source: the comment lines that would be public (the authors' own notes first, not the template's), `\iffalse` blocks, `.tex` files the paper does not use |
@@ -83,7 +83,7 @@ What an official page does not state (CVPR's camera-ready length, for instance) 
 every year: a pull request with the new value, the sentence and the source is the way to fix one, and adding a venue
 is one file ([CONTRIBUTING](CONTRIBUTING.md)).
 
-Without `--venue`, the template chooses the rules. For an older template (`neurips_2023`), the venue's newest rules are
+Without `--venue`, the template chooses the rules (an ACM `acmart` paper needs `--venue`: one class, dozens of venues). For an older template (`neurips_2023`), the venue's newest rules are
 used and the report says so; a section those newer rules require is then only a note.
 
 ## How accurate it is
@@ -152,7 +152,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: zch6a/submit-check@main
+      - uses: zch6a/submit-check@v0
         with:
           path: paper
           venue: neurips2025   # optional: from the template otherwise
