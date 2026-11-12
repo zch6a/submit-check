@@ -1,0 +1,18 @@
+# Every value below is taken from the official author guidelines; `source` says where, `verified` when it was read.
+[venue]
+id = "cvpr2026"
+name = "CVPR 2026"
+source = "https://cvpr.thecvf.com/Conferences/2026/AuthorGuidelines"
+verified = "2026-11-13"
+template = "cvpr"
+
+[pages]
+# "Papers are limited to eight pages, including figures and tables, in the CVPR style." Additional pages containing
+# only cited references are allowed. (The camera-ready limit is not stated on that page.)
+submission = 8
+not_counted = ["references"]
+
+[anonymity]
+# "CVPR reviewing is double blind"; acknowledgments must not identify the authors; "do not provide links to websites
+# that identify the authors."
+required = true

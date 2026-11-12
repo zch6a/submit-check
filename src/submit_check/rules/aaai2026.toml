@@ -1,0 +1,31 @@
+# Every value below is taken from the official submission instructions; `source` says where, `verified` when it was
+# read.
+[venue]
+id = "aaai2026"
+name = "AAAI-26"
+source = "https://aaai.org/conference/aaai/aaai-26/submission-instructions/"
+verified = "2026-11-13"
+template = "aaai"
+
+[pages]
+# "up to 7 pages of technical content plus additional pages solely for references and the reproducibility checklist"
+submission = 7
+not_counted = ["references", "reproducibility checklist"]
+
+[anonymity]
+# "The authors must remove all author and affiliation information from their submission for review";
+# "acknowledgements should be omitted from papers submitted for review."
+required = true
+
+[pdf]
+# "formatted for US Letter (8.5″ x 11″) paper, using Type 1 or TrueType fonts"
+paper = "letter"
+no_type3_fonts = true
+
+[[required]]
+# The reproducibility checklist "must be completed at submission": "include your answers in your PDF after the
+# references."
+what = "the reproducibility checklist"
+pattern = 'reproducibility\s+checklist'
+modes = ["submission"]
+severity = "error"

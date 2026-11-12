@@ -1,0 +1,26 @@
+# Every value below is taken from the official call for papers; `source` says where, `verified` when it was read.
+[venue]
+id = "icml2025"
+name = "ICML 2025"
+source = "https://icml.cc/Conferences/2025/CallForPapers"
+verified = "2026-11-13"
+template = "icml"
+
+[pages]
+# "8 pages for the main paper, with unlimited pages for references, the impact statement, and appendices."
+submission = 8
+# "The final versions of accepted papers will be allowed one extra page for the main paper."
+camera_ready = 9
+not_counted = ["references", "impact statement", "appendix"]
+
+[anonymity]
+# "All submissions must be anonymized."
+required = true
+
+[[required]]
+# "Authors are required to include a statement of the potential broader impact of their work" (in a separate
+# section at the end, before the references; optional for position papers).
+what = "an Impact Statement section"
+pattern = 'impact\s+statement|broader\s+impact'
+modes = ["submission", "camera-ready"]
+severity = "error"

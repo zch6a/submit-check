@@ -1,0 +1,27 @@
+# Every value below is taken from the official call for papers; `source` says where, `verified` when it was read.
+# Corrections welcome: change the value, the source and the date in one pull request.
+[venue]
+id = "neurips2025"
+name = "NeurIPS 2025"
+source = "https://neurips.cc/Conferences/2025/CallForPapers"
+verified = "2026-11-13"
+template = "neurips"
+
+[pages]
+# "The main text of a submitted paper is limited to nine content pages, including all figures and tables."
+submission = 9
+# "If your submission is accepted, you will be allowed an additional content page for the camera-ready version."
+camera_ready = 10
+# "Additional pages containing references, checklist, and the optional technical appendices do not count as content pages."
+not_counted = ["references", "checklist", "appendix"]
+
+[anonymity]
+# "All submissions must be anonymized."
+required = true
+
+[[required]]
+# "authors are required to complete a paper checklist"
+what = "the NeurIPS paper checklist"
+pattern = 'checklist'
+modes = ["submission", "camera-ready"]
+severity = "error"

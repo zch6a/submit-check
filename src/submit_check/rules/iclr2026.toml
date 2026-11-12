@@ -1,0 +1,26 @@
+# Every value below is taken from the official author guide; `source` says where, `verified` when it was read.
+[venue]
+id = "iclr2026"
+name = "ICLR 2026"
+source = "https://iclr.cc/Conferences/2026/AuthorGuide"
+verified = "2026-11-13"
+template = "iclr"
+
+[pages]
+# "At the time of submission, the main text should be 9 pages or fewer."
+submission = 9
+# "page limit is identical with the submission version (10 pages)" (increased to 10 for the rebuttal and camera ready)
+camera_ready = 10
+# "The list of references does not count towards the page limit"; appendices after the bibliography are unlimited.
+not_counted = ["references", "appendix", "ethics statement", "reproducibility statement"]
+
+[anonymity]
+# "ICLR 2026 is double blind, which means that all submitted papers should be anonymous."
+required = true
+
+[[required]]
+# "Authors are strongly encouraged to include a paragraph-long Reproducibility Statement" (encouraged, not required)
+what = "a Reproducibility Statement (strongly encouraged)"
+pattern = 'reproducibility\s+statement'
+modes = ["submission", "camera-ready"]
+severity = "note"

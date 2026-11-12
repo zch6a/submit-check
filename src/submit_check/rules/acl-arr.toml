@@ -1,0 +1,26 @@
+# Every value below is taken from the ACL Rolling Review call for papers; `source` says where, `verified` when it was
+# read. The same rules apply to ACL, EMNLP, NAACL and the other venues that review through ARR.
+[venue]
+id = "acl-arr"
+name = "ACL Rolling Review (ACL, EMNLP, NAACL, ...), long papers"
+source = "https://aclrollingreview.org/cfp"
+verified = "2026-11-13"
+template = "acl"
+
+[pages]
+# "up to eight (8) pages of content" (short papers: four), "plus unlimited pages of references"
+submission = 8
+not_counted = ["references", "limitations", "ethics", "appendix"]
+
+[anonymity]
+# "Papers must not include authors' names and affiliations."
+required = true
+
+[[required]]
+# "Authors are required to discuss the limitations of their work in a dedicated section titled 'Limitations'."
+# Papers without one "will be desk rejected."
+what = "a section titled Limitations"
+pattern = 'limitations?'
+heading = true
+modes = ["submission", "camera-ready"]
+severity = "error"
