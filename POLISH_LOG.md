@@ -21,4 +21,11 @@
 - **规则检查**：模板与会议是否一致、终稿是否还停在评审模式、必需章节在不在。没指定 --venue 时按模板找规则，年份不对就用这一会议最新的规则并说明。
 - **PDF 检查**（pypdf）：References 之前的正文页数对照上限（References 所在页上方有内容也算一页）、元数据里的作者名和带用户名的路径、Type 3 字体、没嵌入的字体、纸张大小。
 - **arXiv 模式**：arXiv 会公开源码——注释行、\iffalse 块、论文没用到的 .tex 文件都列出来。
+- **测量（50 篇已发表论文的 arXiv 源码）**：
+  - camera-ready 模式（这些就是终稿，应当几乎不报）：第一版报“缺 checklist / Impact Statement / Limitations”24 处——拿 2025 年的规则要求 2017 年的论文，不合理；
+    用的是“同一会议最新规则”时，缺章节降为提示并注明“新规则要求”。彩色文字（提示词、例子里大量是有意的）整项去掉。小写 todo（toggle 名）、XXX（ISBN 占位、tabularx 列格式）误报 → 只认大写 TODO/FIXME/TBD。
+    FlashAttention 在 \iftoggle{arxiv}{}{\usepackage{neurips_2022}} 里加载模板，源码看不出 PDF 用的是哪种模式 → 条件里加载的模板只给提示。
+    现在 camera-ready 模式下只剩 LDM 的 9 处 \todo{…}——它把 \todo 定义成红字打印，确实留在了 arXiv 版里。
+  - arXiv 模式：注释一开始举的例子全是模板自带的（“allow utf-8 input”）→ 导言区的注释算模板的，只拿正文里的注释举例和定级。现在举出来的是作者真正的笔记，例如 Transformer 源码里的 “TODO(noam): update re…”。
+  - 注入匿名泄露（五类、每类三种写法，插在正文段落之间）：750 处全部在注入的那一行查出。
 - **命令行**：`--venue`、`--mode submission|camera-ready|arxiv`、`--pdf`（默认找主文件同名 PDF）、`--list-venues`（每条规则和来源）、终端/JSON/Markdown。14 个测试（测试用的 PDF 在测试里手写生成，不用真实论文）。

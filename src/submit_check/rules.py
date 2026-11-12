@@ -123,7 +123,7 @@ def check(texts: dict[str, str], venue: Venue, template: Template, mode: str) ->
         out.append(
             Finding("template-year", "warning", main_file, template.line, f"the template is {template.package}, the rules are for {venue.name}")
         )
-    if mode == "camera-ready" and template.hides_authors:
+    if mode == "camera-ready" and template.hides_authors and not template.conditional:
         out.append(
             Finding("template-mode", "error", main_file, template.line, f"a camera-ready in review mode: {template.package} hides the authors")
         )

@@ -18,6 +18,20 @@ def test_a_template_in_final_mode_prints_the_authors():
     assert run(tex, "camera-ready") == []  # nothing to hide in a camera-ready
 
 
+def test_a_template_loaded_inside_a_condition():
+    # FlashAttention: \iftoggle{arxiv}{}{\usepackage{neurips_2022}}: the mode of the PDF is not in the source
+    tex = r"\newtoggle{arxiv}\iftoggle{arxiv}{}{\usepackage{neurips_2022}}\author{Tri Dao}"
+    t = templates.detect(tex)
+    assert t.conditional
+    (f,) = run(tex)
+    assert f.kind == "template-mode" and f.severity == "note"
+
+
+def test_leftover_words_in_capitals_only():
+    assert leftovers.check({"m.tex": r"\newtoggle{todo} \begin{tabularx}{\textwidth}{l|XXX} ISBN 978-1-XXXX"}) == []
+    assert [f.kind for f in leftovers.check({"m.tex": "TODO: rewrite this. FIXME"})] == ["todo", "todo"]
+
+
 def test_names_with_a_template_that_does_not_hide_them():
     tex = r"\documentclass{article}\author{Ada Lovelace \\ University of London}\begin{document}x\end{document}"
     assert kinds(run(tex)) == ["author-names"]

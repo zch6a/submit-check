@@ -102,7 +102,18 @@ def check(texts: dict[str, str], template: Template, mode: str = "submission") -
         return []
     out: list[Finding] = []
     main_file = next(iter(texts), "")
-    if template.venue and not template.hides_authors:
+    if template.venue and template.conditional:
+        out.append(
+            Finding(
+                "template-mode",
+                "note",
+                main_file,
+                template.line,
+                f"the {template.package} template is loaded inside a condition (\\iftoggle, \\if...): check that the "
+                "submission is built in its anonymous mode",
+            )
+        )
+    elif template.venue and not template.hides_authors:
         out.append(
             Finding(
                 "template-mode",

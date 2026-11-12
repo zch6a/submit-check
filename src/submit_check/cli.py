@@ -89,8 +89,14 @@ def run(argv: list[str] | None = None) -> int:
         findings += leftovers.check(texts)
         if venue and args.mode != "arxiv":  # an arXiv version follows arXiv's rules, not the venue's
             found = rules.check(texts, venue, template, args.mode)
-            if notes:  # the venue was picked by the template's family: its year is already explained
-                found = [f for f in found if f.kind != "template-year"]
+            if notes:
+                # The rules are another year's (the template's family, newest rules): the year is already explained,
+                # and a section that year requires may not have been required when the paper was written.
+                found = [
+                    Finding(f.kind, "note", f.file, f.line, f.message + " (in the newer rules)") if f.kind == "required-section" else f
+                    for f in found
+                    if f.kind != "template-year"
+                ]
             findings += found
         if args.mode == "arxiv":
             findings += arxivcheck.check(proj.files, root)
