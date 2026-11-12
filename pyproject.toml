@@ -1,0 +1,61 @@
+[project]
+name = "submit-check"
+version = "0.1.0"
+description = "Checks a LaTeX paper against a venue's submission rules before you submit: anonymity leaks, page limits, the right template and options, required sections, PDF fonts and metadata."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "zch6a" }]
+keywords = ["latex", "anonymity", "double-blind", "submission", "neurips", "icml", "iclr", "acl", "cvpr", "research", "peer-review"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Text Processing :: Markup :: LaTeX",
+]
+# paper-proof reads the LaTeX project (\input, comments, \iffalse, tables); pypdf reads the PDF; tomli is the
+# standard library's TOML reader before Python 3.11.
+dependencies = [
+    "paper-proof @ git+https://github.com/zch6a/paper-proof@v0.1.0",
+    "pypdf>=4.0",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.urls]
+Homepage = "https://github.com/zch6a/submit-check"
+Issues = "https://github.com/zch6a/submit-check/issues"
+
+[project.scripts]
+submit-check = "submit_check.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/submit_check"]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6", "mypy>=1.10"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "src"]
+pythonpath = ["src"]
+addopts = "--doctest-modules --import-mode=importlib"
+
+[tool.mypy]
+python_version = "3.10"
+files = ["src/submit_check"]
+ignore_missing_imports = true
+
+[tool.ruff]
+line-length = 150
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
