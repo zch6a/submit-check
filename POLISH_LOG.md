@@ -64,3 +64,13 @@
   另：Action 改用 `--pdf=$PDF` / `--venue=$VENUE`，以 “-” 开头的值不会被当成选项。
 - 修完重测：50 篇终稿 camera-ready 模式仍只剩 LDM 的 9 处 \todo；注入泄露 750/750。示例论文的邮箱一条从第 20 行（模板终稿模式下本就会印出、已由模板那条覆盖）变成正文第 30 行，README 输出、演示图和社交预览图随之更新。35 个测试（3.10 / 3.13）。
 - **命令行**：`--venue`、`--mode submission|camera-ready|arxiv`、`--pdf`（默认找主文件同名 PDF）、`--list-venues`（每条规则和来源）、终端/JSON/Markdown。14 个测试（测试用的 PDF 在测试里手写生成，不用真实论文）。
+
+## 第 2 轮打磨（2026-11-13）
+
+- **文档与规则一致**：新测试 tests/test_readme_rules.py——中英 README 规则表里的会议、页数、出处必须和 rules/*.toml 一致，以后改规则忘改 README 会直接挂测试。
+- **体验**：`--help` 里每个选项都有说明，`--venue` 直接列出可选的会议；按 README 从 GitHub 全新安装（连同 paper-proof v0.1.0）约 20 秒，能跑。
+
+## 第 3 轮打磨（2026-11-13）
+
+- **IJCAI-ECAI 2026**：找到了官方主赛道征稿页（2026.ijcai.org/ijcai-ecai-2026-call-for-papers-main-track/），读后加规则：正文 7 页 + 参考文献 2 页。
+  IJCAI 的样式包有没有自动隐藏作者的选项，官方页没说——不确定就不假设：认出 ijcai 模板但模式记为“未知”，作者名直接检查，不报“模板模式不对”。共 9 个会议。37 个测试。
