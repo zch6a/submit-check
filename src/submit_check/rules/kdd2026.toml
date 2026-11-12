@@ -1,0 +1,20 @@
+# Every value below is taken from the official research-track call (Cycle 2, February 2026 deadlines); `source` says
+# where, `verified` when it was read.
+[venue]
+id = "kdd2026"
+name = "KDD 2026, research track"
+source = "https://kdd2026.kdd.org/research-track-call-for-papers/"
+verified = "2026-11-13"
+template = "acm"
+
+[pages]
+# "8 (eight) content pages as main paper, followed by references and an optional Appendix that has no page limits."
+submission = 8
+# accepted papers: "12 pages, of which 9 are content pages"
+camera_ready = 9
+not_counted = ["references", "appendix"]
+
+[anonymity]
+# "The submitted document should omit any author names, affiliations, or other identifying information."
+# Recommended: \documentclass[sigconf,anonymous,review]{acmart}
+required = true

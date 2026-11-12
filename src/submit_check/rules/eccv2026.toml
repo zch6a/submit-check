@@ -1,0 +1,25 @@
+# Every value below is taken from the official submission policies; `source` says where, `verified` when it was read.
+[venue]
+id = "eccv2026"
+name = "ECCV 2026"
+source = "https://eccv.ecva.net/Conferences/2026/SubmissionPolicies"
+verified = "2026-11-13"
+template = "eccv"
+
+[pages]
+# "Papers are limited to 14 pages, including figures and tables, in the LNCS style of Springer."
+# "Additional pages containing only cited references are allowed." (The camera-ready limit is not stated there.)
+submission = 14
+not_counted = ["references"]
+
+[anonymity]
+# "Authors must not provide information that may identify themselves in the paper." "authors must not provide links
+# to websites that identify them"
+required = true
+
+[[forbidden]]
+# "Note that no Appendices are permitted in the main submission." (They go in the supplementary material.)
+what = "an appendix in the main submission (it goes in the supplementary material)"
+pattern = '\\appendix\b|\\begin\{appendices\}'
+modes = ["submission"]
+severity = "error"

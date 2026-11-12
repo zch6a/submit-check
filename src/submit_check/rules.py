@@ -39,6 +39,7 @@ class Venue:
     not_counted: list[str]
     anonymous: bool
     required: list[Required]
+    forbidden: list[Required] = field(default_factory=list)  # what must not be there (ECCV: an appendix)
     paper: str = ""
     no_type3_fonts: bool = False
 
@@ -61,6 +62,7 @@ def _venue(data: dict) -> Venue:
         not_counted=pages.get("not_counted", []),
         anonymous=data.get("anonymity", {}).get("required", True),
         required=[Required(**r) for r in data.get("required", [])],
+        forbidden=[Required(**r) for r in data.get("forbidden", [])],
         paper=data.get("pdf", {}).get("paper", ""),
         no_type3_fonts=data.get("pdf", {}).get("no_type3_fonts", False),
     )
@@ -140,4 +142,13 @@ def check(texts: dict[str, str], venue: Venue, template: Template, mode: str) ->
             out.append(
                 Finding("required-section", r.severity, main_file, 1, f"{venue.name} requires {r.what}, and it is not in the paper ({venue.source})")
             )
+    for r in venue.forbidden:
+        if mode not in r.modes:
+            continue
+        for file, text in texts.items():
+            m = re.search(r.pattern, text, re.I)
+            if m:
+                line = text.count("\n", 0, m.start()) + 1
+                out.append(Finding("forbidden", r.severity, file, line, f"{venue.name} does not allow {r.what} ({venue.source})"))
+                break
     return out

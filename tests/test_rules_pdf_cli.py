@@ -87,6 +87,21 @@ def test_required_sections_and_template():
     assert [f.kind for f in rules.check({"m.tex": wrong}, ICML, templates.detect(wrong), "submission")] == ["wrong-template"]
 
 
+def test_eccv_forbids_an_appendix_and_kdd_uses_acmart():
+    eccv = rules.all_venues()["eccv2026"]
+    tex = r"\usepackage[review,year=2026,ID=1]{eccv}\section{Method}x\appendix\section{Proofs}"
+    (f,) = rules.check({"main.tex": tex}, eccv, templates.detect(tex), "submission")
+    assert f.kind == "forbidden" and "appendix" in f.message
+    final = tex.replace("[review,", "[")
+    assert rules.check({"main.tex": final}, eccv, templates.detect(final), "camera-ready") == []  # appendix fine then
+    kdd = r"\documentclass[sigconf,anonymous,review]{acmart}"
+    t = templates.detect(kdd)
+    assert (t.venue, t.mode) == ("acm", "review")
+    assert templates.detect(r"\documentclass[sigconf]{acmart}").mode == "final"
+    v, _ = rules.pick(None, t)
+    assert v.id == "kdd2026"
+
+
 def test_picking_the_venue_from_the_template():
     v, notes = rules.pick(None, templates.detect(r"\usepackage{icml2025}"))
     assert v.id == "icml2025" and notes == []

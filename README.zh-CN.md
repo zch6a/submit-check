@@ -42,7 +42,7 @@ Summary: 4 ERRORS, 5 WARNINGS
 
 | | |
 |---|---|
-| **模板与模式** | 认得 NeurIPS、ICML、ICLR、CVPR/ICCV/WACV、ACL（ARR）、ECCV、AAAI 的模板，看它们是否处在匿名模式（`[final]`、`[preprint]`、`[accepted]`、`\iclrfinalcopy` 都会印出作者）；模板与会议是否一致；终稿是否还停在评审模式 |
+| **模板与模式** | 认得 NeurIPS、ICML、ICLR、CVPR/ICCV/WACV、ACL（ARR）、ECCV、AAAI 和 ACM（`acmart`）的模板，看它们是否处在匿名模式（`[final]`、`[preprint]`、`[accepted]`、`\iclrfinalcopy` 都会印出作者）；模板与会议是否一致；终稿是否还停在评审模式 |
 | **匿名** | 没有东西隐藏时 `\author` 里的真名；致谢（NeurIPS 的 `ack` 环境由模板自动隐藏，不报）；邮箱；`\thanks`；指向作者自己代码或主页的链接（指向别人的库不报，anonymous.4open.science 不报）；第一人称自引；资助与基金号；PDF 元数据里的作者名和带用户名的路径 |
 | **会议规定** | References 之前的正文页数对照上限（投稿或终稿）；必需章节：NeurIPS 的 paper checklist、ICML 的 Impact Statement、ACL 的 Limitations、AAAI 的复现清单 |
 | **PDF** | Type 3（位图）字体、未嵌入的字体、纸张大小（AAAI：US Letter） |
@@ -63,6 +63,8 @@ Summary: 4 ERRORS, 5 WARNINGS
 | ICLR 2026（`iclr2026`） | 9（10） | 参考文献、附录、各类声明 | （鼓励写 Reproducibility Statement） | [author guide](https://iclr.cc/Conferences/2026/AuthorGuide) |
 | ACL Rolling Review（`acl-arr`） | 8（长文） | 参考文献、limitations、ethics、附录 | Limitations 一节 | [call for papers](https://aclrollingreview.org/cfp) |
 | CVPR 2026（`cvpr2026`） | 8 | 参考文献 | | [author guidelines](https://cvpr.thecvf.com/Conferences/2026/AuthorGuidelines) |
+| ECCV 2026（`eccv2026`） | 14 | 参考文献 | 投稿正文里不能有附录 | [submission policies](https://eccv.ecva.net/Conferences/2026/SubmissionPolicies) |
+| KDD 2026 研究赛道（`kdd2026`） | 8（9） | 参考文献、附录 | ACM 模板，`anonymous` 选项 | [call for papers](https://kdd2026.kdd.org/research-track-call-for-papers/) |
 | AAAI-26（`aaai2026`） | 7 | 参考文献、复现清单 | 复现清单；US Letter；Type 1/TrueType 字体 | [submission instructions](https://aaai.org/conference/aaai/aaai-26/submission-instructions/) |
 
 官方页面没写的（比如 CVPR 终稿页数）规则里就没有。规则每年都变：修正一条只需一个改值、附原句和出处的 PR；加一个会议就是加一个文件（见 [CONTRIBUTING](CONTRIBUTING.md)）。
