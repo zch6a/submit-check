@@ -44,4 +44,5 @@
 - **对照 README 实测**：只给 PDF（带 / 不带 --venue）、损坏的 PDF、不存在的 --pdf、没有 \documentclass 的片段、没有 .tex 的文件夹、Latin-1 编码的 .tex、不存在的路径、什么都不给——
   改了两处：不存在的路径直接说“没有这个文件或文件夹”；片段文件照查但提示“这不是主文件，只查了它和它 \input 的”。
 - 独立代码审查（子代理，只读、不联网）进行中。19 个测试。
+- README 顶部加演示图 docs/demo.png（scripts/render_demo.py：真实彩色输出转 HTML、无头 Chrome 渲染，不截屏），文字版收进折叠块。
 - **命令行**：`--venue`、`--mode submission|camera-ready|arxiv`、`--pdf`（默认找主文件同名 PDF）、`--list-venues`（每条规则和来源）、终端/JSON/Markdown。14 个测试（测试用的 PDF 在测试里手写生成，不用真实论文）。
