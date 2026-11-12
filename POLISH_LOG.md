@@ -33,4 +33,7 @@
 - **示例论文** examples/paper（ICML 2025，故意埋了问题）：模板在 [accepted] 模式、邮箱、致谢、第一人称自引、自己代码的链接、\todo、资助、缺 Impact Statement 全部查出；
   arXiv 模式下导言区的 “TODO(jd): ask Ada …” 一开始被当成模板注释 → 带 TODO/FIXME/XXX 的注释不论在哪都算作者自己的。
 - **GitHub Action**（composite，只读，结果写进任务摘要，JSON 报告作输出）、**CI**（三系统 × 两个 Python，pytest/ruff/mypy，再用 action 跑示例并断言八类问题都在）、**Agent Skill**。17 个测试。
+- **文档与发布**：中英 README（真实输出、每条规则带出处的表、准确度、做不到的事、完全离线）、CONTRIBUTING（怎么加一个会议：一个 TOML 文件、每个值上面引原句）、SECURITY、CHANGELOG、release 工作流、社交预览图。
+- **建仓库** https://github.com/zch6a/submit-check 并推送。第一次 CI 在 Python 3.10 上挂了：又是“doctest 写在文档字符串第一行”（paper-proof 踩过的同一个坑）。
+  修好后加了一个测试专门禁止这种写法，两个仓库都加上；以后推送前也在本地跑 3.10。CI 全绿。18 个测试。
 - **命令行**：`--venue`、`--mode submission|camera-ready|arxiv`、`--pdf`（默认找主文件同名 PDF）、`--list-venues`（每条规则和来源）、终端/JSON/Markdown。14 个测试（测试用的 PDF 在测试里手写生成，不用真实论文）。
