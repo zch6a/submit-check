@@ -60,8 +60,8 @@ Summary: 4 ERRORS, 5 WARNINGS
 
 ## 规则及其出处
 
-每个会议的规则是 [`src/submit_check/rules/`](src/submit_check/rules/) 里的一个 TOML 小文件，每个值旁边都引着官方投稿说明的原句、
-网址和读取日期。`submit-check --list-venues` 会全部列出。
+每个会议的规则是 [`src/submit_check/rules/`](src/submit_check/rules/) 里的一个 TOML 小文件，每个值旁边都引着官方投稿说明的原句，
+并注明网址和读取日期。`submit-check --list-venues` 会全部列出。
 
 | 会议 | 页数（终稿） | 不计入 | 必需 | 出处（2026-11-13 读取） |
 |---|---|---|---|---|

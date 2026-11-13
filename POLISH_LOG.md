@@ -85,3 +85,9 @@
 
 - **文档对照行为**：README 规则那一行补上“不许出现的内容（ECCV 投稿正文里的附录）”；说明 ACM acmart 要用 --venue（一个模板对应几十个会议）；Action 示例改用 `@v0`。
 - **发布 v0.1.0**：CI 绿后打 tag，release 工作流（只读任务里测试、构建、取 CHANGELOG；写权限任务只调 gh）建了 GitHub Release（wheel + 源码包），v0 标签指向它。不发 PyPI。
+
+### 2026-11-14 — Chinese README: AI tone
+
+- 1 place: a 3-item 顿号 list inside a sentence reworded (what each rules value cites: the quoted sentence, then its address and reading date).
+- The checks follow the findings of lieflat-less-ai-tone (shiujan, CC BY-NC 4.0); its findings applied, its text not copied.
+- Left as they are: the colon-led lists (what it checks, the examples of desk rejections, what was fixed), 这是检查，不是匿名的保证 (a real scope limit, not a made-up misreading), the rules table the README test reads.
