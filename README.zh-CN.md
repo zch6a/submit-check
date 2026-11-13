@@ -151,6 +151,10 @@ jobs:
 
 不发送任何内容：规则随工具一起发布，论文和 PDF 都在本地读取。LaTeX 工程通过 [paper-proof](https://github.com/zch6a/paper-proof) 的读取器读取（`\input`、注释、`\iffalse`），不使用它联网核查参考文献的部分。
 
+## 属于 research-kit
+
+这是 13 个开源科研工具之一，覆盖从读论文到论文发表之后。全部工具按科研流程的介绍，以及安装它们技能的 Claude Code 插件市场，见 [research-kit](https://github.com/zch6a/research-kit) · [网站](https://zch6a.github.io/research-kit/)。
+
 ## 许可证
 
 MIT
