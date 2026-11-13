@@ -1,6 +1,6 @@
 [project]
 name = "submit-check"
-version = "0.1.0"
+version = "0.1.1"
 description = "Checks a LaTeX paper against a venue's submission rules before you submit: anonymity leaks, page limits, the right template and options, required sections, PDF fonts and metadata."
 readme = "README.md"
 license = "MIT"

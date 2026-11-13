@@ -1,8 +1,8 @@
 ---
 name: submit-check
-description: Check a LaTeX paper against a conference's submission rules with submit-check before it is submitted, made camera-ready, or posted to arXiv. Finds what breaks double-blind review (a template in final mode, names, acknowledgements, e-mails, links to the authors' code, first-person self-citation, funding lines, PDF metadata), the page limit, missing required sections (NeurIPS checklist, ICML impact statement, ACL Limitations), Type 3 or unembedded fonts, leftover TODO notes, and the comments an arXiv source would make public. Use when the user is about to submit a paper, prepares a camera-ready, or uploads LaTeX source to arXiv.
+description: "Check a LaTeX paper against a conference's submission rules with submit-check before it is submitted, made camera-ready, or posted to arXiv. Finds what breaks double-blind review (a template in final mode, names, acknowledgements, e-mails, links to the authors' code, first-person self-citation, funding lines, PDF metadata), the page limit, missing required sections (NeurIPS checklist, ICML impact statement, ACL Limitations), Type 3 or unembedded fonts, leftover TODO notes, and the comments an arXiv source would make public. Use when the user is about to submit a paper, prepares a camera-ready, or uploads LaTeX source to arXiv."
 license: MIT
-compatibility: Needs Python 3.10+ and uv. Runs submit-check with uvx from GitHub (git+https://github.com/zch6a/submit-check) unless a submit-check command is installed. Offline: nothing is sent anywhere.
+compatibility: "Needs Python 3.10+ and uv. Runs submit-check with uvx from GitHub (git+https://github.com/zch6a/submit-check) unless a submit-check command is installed. Offline: nothing is sent anywhere."
 metadata:
   homepage: https://github.com/zch6a/submit-check
 ---

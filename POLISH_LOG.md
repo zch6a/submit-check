@@ -91,3 +91,11 @@
 - 1 place: a 3-item 顿号 list inside a sentence reworded (what each rules value cites: the quoted sentence, then its address and reading date).
 - The checks follow the findings of lieflat-less-ai-tone (shiujan, CC BY-NC 4.0); its findings applied, its text not copied.
 - Left as they are: the colon-led lists (what it checks, the examples of desk rejections, what was fixed), 这是检查，不是匿名的保证 (a real scope limit, not a made-up misreading), the rules table the README test reads.
+
+### 2026-11-14 — v0.1.1
+
+Putting every tool's skill into one marketplace (research-kit) and running `claude plugin validate` on each
+showed this one's SKILL.md frontmatter did not parse: a plain YAML value with `: ` inside ("…: text size…")
+starts a new key, so Claude Code loaded the skill with no description, and an agent would never pick it. The
+description and compatibility values are quoted (a JSON string is a YAML double-quoted scalar); validation passes.
+Released as 0.1.1 so that `v0`, which the marketplace installs from, carries the fix.
