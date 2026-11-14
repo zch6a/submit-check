@@ -143,3 +143,19 @@ hang (catastrophic backtracking); `\usepackage{lineno}` alone numbers nothing (C
 
 13 tests (49 in all); README and Chinese README (what it checks, measured results, usage), Action input, Skill,
 CHANGELOG; `examples/supplementary/code` with planted leaks.
+
+### 2026-11-14 — 0.3.0: submit-check move
+
+From research-kit's list: "move a paper between venue templates with a report of what breaks" (Pandoc loses custom
+macros and venue environments; nothing knows page limits or style-file quirks). This is the report; the edits stay
+with the author (or their agent, from the report).
+
+`move.py`: the template line, a table of commands each family defines (ICML's title and author block and its
+`\twocolumn[...]` wrapper, ICLR's final-copy switch, CVPR's paper ID and conference macros, ACL's, AAAI's, IJCAI's,
+llncs', acmart's), column counts per family, the venues' required and forbidden sections from the rules files, the
+bibliography styles of the kits, and the PDF's page count through pdfcheck.
+
+Measured on the 50 arXiv sources (fetched again, deleted after): 43 have a known template, each moved to another
+venue. 121 old-template commands, 43 template swaps, 37 section notes, 28 bibliography styles: read through, all
+right. Column notes were 313 (one per float); now one per file and kind with a count (137). `\twocolumn[` is LaTeX's,
+not ICML's: its message now says it is part of the title block ICML expects. 3 tests.

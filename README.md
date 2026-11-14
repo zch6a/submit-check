@@ -81,6 +81,42 @@ note     code  links to GitHub accounts: huggingface, janedoe42; check none of t
 Summary: 2 ERRORS, 2 WARNINGS, 1 note
 ```
 
+## Moving to another venue: `submit-check move`
+
+A rejected paper goes to the next deadline in another template. `submit-check move paper/ --to icml2025` lists what
+the move involves, each with its file and line: the template line to swap; the commands only the old template
+defines (`\icmlauthor`, `\iclrfinalcopy`, `\cvprPaperID`, `\institute`, `\ccsdesc`, ...); one column to two
+(floats set to `\textwidth` that will overflow a column) or two to one (`figure*` that becomes an ordinary figure);
+sections the new venue requires and sections only the old one asked for; the old kit's bibliography style; and the
+current PDF's page count against the new limit (a first estimate: the new layout changes it). It changes nothing.
+
+```console
+$ submit-check move examples/paper --to neurips2025
+submit-check move: from ICML to NeurIPS 2025
+
+Template
+  main.tex:6  replace icml2025 with the NeurIPS template in its submission mode (the kit is linked from https://neurips.cc/Conferences/2025/CallForPapers)
+
+Commands of the old template
+  main.tex:9  \icmltitlerunning: defined by the ICML template only: delete it (or use the target template's running-title command, if it has one)
+  main.tex:12  \twocolumn[: part of the title block the ICML template expects: drop the \twocolumn[...] wrapper and use \maketitle
+  main.tex:13  \icmltitle: defined by the ICML template only: use \title{...}
+  main.tex:16  \icmlauthor: defined by the ICML template only: move the authors into \author{...} as the target's template asks
+  ...
+
+Sections
+  add the NeurIPS paper checklist: NeurIPS 2025 requires it (https://neurips.cc/Conferences/2025/CallForPapers)
+
+Bibliography
+  main.tex:40  \bibliographystyle{icml2025} comes with the ICML kit: use the style in the NeurIPS kit
+```
+
+On 43 of the 50 arXiv sources (those with a known template; each moved to another venue: NeurIPS to ICML, ICML to
+NeurIPS, ICLR to ICML, CVPR to ECCV, ACL to NeurIPS, ...): 121 commands of the old template found (27 `\icmlauthor`,
+10 `\affiliation`, 7 `\iclrfinalcopy`, CVPR's `\confName` and `\cvprPaperID`, ...), and column notes for every
+paper that changes layout. Read through, they were all right; there were too many at first (313, one per float),
+so they are now one note per file with a count.
+
 ## The rules, and where they come from
 
 Each venue's rules are a small TOML file in [`src/submit_check/rules/`](src/submit_check/rules/), with every value next to
@@ -164,6 +200,7 @@ submit-check paper/ --supplementary supp.zip # the supplementary material too (a
 submit-check --supplementary code/ --author "Jane Doe"   # only the material, with the names to look for
 submit-check paper/ --mode camera-ready      # the camera-ready: page limit, and what the review version left behind
 submit-check paper/ --mode arxiv             # before uploading the source to arXiv
+submit-check move paper/ --to icml2025       # what moving to another venue's template involves
 submit-check paper.pdf --venue icml2025      # a PDF alone: pages, metadata, fonts
 submit-check --list-venues                   # every rule, with its source
 ```

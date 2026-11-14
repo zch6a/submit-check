@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-11-14
+
+- **`submit-check move PAPER --to VENUE`**: what moving a paper to another venue's template involves, each with its
+  file and line: the template to swap, commands only the old template defines (ICML's author block,
+  `\iclrfinalcopy`, CVPR's paper ID, llncs' `\institute`, acmart's `\ccsdesc`, ...), one column to two or back,
+  sections the new venue requires or only the old one asked for, the old kit's bibliography style, and the current
+  PDF's page count against the new limit. Changes nothing. Measured on 43 arXiv sources.
+
 ## 0.2.1 — 2026-11-14
 
 - The Claude Code plugin's manifest (`plugin/.claude-plugin/plugin.json`) says 0.2.1: it had stayed at an older

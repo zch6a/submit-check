@@ -63,7 +63,42 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def move_main(argv: list[str]) -> int:
+    from . import move
+
+    ap = argparse.ArgumentParser(prog="submit-check move", description=move.__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("paper", help="the LaTeX project folder or its main .tex file")
+    ap.add_argument("--to", required=True, metavar="VENUE", help=f"the venue it moves to: {', '.join(sorted(rules.all_venues()))}")
+    ap.add_argument("--pdf", type=Path, help="the compiled PDF, for a first page count (default: the main file's .pdf)")
+    ap.add_argument("--format", choices=["text", "json"], default="text")
+    args = ap.parse_args(argv)
+    venues = rules.all_venues()
+    if args.to not in venues:
+        print(f"submit-check: no rules for {args.to!r}; known: {', '.join(sorted(venues))}", file=sys.stderr)
+        return 2
+    path = Path(args.paper)
+    main = find_main(path) if path.is_dir() else path
+    if main is None or not main.is_file():
+        print(f"submit-check: {path}: no main .tex file", file=sys.stderr)
+        return 2
+    proj = read_project(main)
+    template = templates.detect_project(proj.texts)
+    try:
+        source, _ = rules.pick(None, template)
+    except KeyError:
+        source = None
+    pdf = args.pdf or (main.with_suffix(".pdf") if main.with_suffix(".pdf").is_file() else None)
+    report = move.check(proj.texts, template, venues[args.to], source, pdf)
+    print(
+        json.dumps(report.json(), indent=2, ensure_ascii=False) if args.format == "json" else report.text(), end="" if args.format == "text" else "\n"
+    )
+    return 0
+
+
 def run(argv: list[str] | None = None) -> int:
+    given = sys.argv[1:] if argv is None else argv
+    if given[:1] == ["move"] and not Path("move").exists():
+        return move_main(given[1:])
     args = build_parser().parse_args(argv)
     if args.list_venues:
         print(list_venues())

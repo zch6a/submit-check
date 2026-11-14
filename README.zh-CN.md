@@ -75,6 +75,33 @@ note     code  links to GitHub accounts: huggingface, janedoe42; check none of t
 Summary: 2 ERRORS, 2 WARNINGS, 1 note
 ```
 
+## 换会议投稿：`submit-check move`
+
+被拒的论文要换一个模板投下一个截稿。`submit-check move paper/ --to icml2025` 列出换过去要改的地方，每条都附文件和行号：要替换的模板那一行；只有旧模板才定义的命令（`\icmlauthor`、`\iclrfinalcopy`、`\cvprPaperID`、`\institute`、`\ccsdesc` 等）；单栏变双栏（设成 `\textwidth` 的图表会超出一栏）或双栏变单栏（`figure*` 变成普通的图）；新会议要求而论文缺少的章节，以及只有旧会议才要求的章节；旧模板自带的参考文献样式；以及当前 PDF 的页数与新上限的对比（只是初步估计，新版式会改变页数）。它不改动任何文件。
+
+```console
+$ submit-check move examples/paper --to neurips2025
+submit-check move: from ICML to NeurIPS 2025
+
+Template
+  main.tex:6  replace icml2025 with the NeurIPS template in its submission mode (the kit is linked from https://neurips.cc/Conferences/2025/CallForPapers)
+
+Commands of the old template
+  main.tex:9  \icmltitlerunning: defined by the ICML template only: delete it (or use the target template's running-title command, if it has one)
+  main.tex:12  \twocolumn[: part of the title block the ICML template expects: drop the \twocolumn[...] wrapper and use \maketitle
+  main.tex:13  \icmltitle: defined by the ICML template only: use \title{...}
+  main.tex:16  \icmlauthor: defined by the ICML template only: move the authors into \author{...} as the target's template asks
+  ...
+
+Sections
+  add the NeurIPS paper checklist: NeurIPS 2025 requires it (https://neurips.cc/Conferences/2025/CallForPapers)
+
+Bibliography
+  main.tex:40  \bibliographystyle{icml2025} comes with the ICML kit: use the style in the NeurIPS kit
+```
+
+在 50 篇 arXiv 源码中有已知模板的 43 篇上实测（每篇换到另一个会议：NeurIPS 换 ICML、ICML 换 NeurIPS、ICLR 换 ICML、CVPR 换 ECCV、ACL 换 NeurIPS 等）：找到 121 处旧模板的命令（27 处 `\icmlauthor`、10 处 `\affiliation`、7 处 `\iclrfinalcopy`，CVPR 的 `\confName` 和 `\cvprPaperID` 等），所有换版式的论文都有栏数提示。逐条看过，都是对的；起初数量太多（313 条，每个浮动体一条），现在每个文件只给一条并附数量。
+
 ## 规则及其出处
 
 每个会议的规则是 [`src/submit_check/rules/`](src/submit_check/rules/) 里的一个 TOML 小文件，每个值旁边都引着官方投稿说明的原句，
@@ -132,6 +159,7 @@ submit-check paper/ --supplementary supp.zip # 连补充材料一起查（.zip �
 submit-check --supplementary code/ --author "Jane Doe"   # 只查补充材料，并告诉它要找的名字
 submit-check paper/ --mode camera-ready      # 终稿：按终稿页数查，并找评审版留下的东西
 submit-check paper/ --mode arxiv             # 上传 arXiv 源码之前
+submit-check move paper/ --to icml2025       # 换到另一个会议的模板要改什么
 submit-check paper.pdf --venue icml2025      # 只有 PDF：页数、元数据、字体
 submit-check --list-venues                   # 列出每条规则和出处
 ```

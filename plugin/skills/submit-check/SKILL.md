@@ -23,6 +23,9 @@ its main `.tex`; the compiled PDF next to the main file is checked too (or pass 
   name to look for (the paper's `\author` block is read as well). Ask the user for their names and user name if the
   paper's source does not have them.
 - `--format json` for every finding with file and line.
+- `submit-check move paper/ --to VENUE`: what moving the paper to another venue's template involves (the template
+  line, the old template's commands, columns, sections, bibliography style, pages). Use it when the user resubmits
+  elsewhere; the template swap and the commands are mechanical edits you can offer to make, the sections are theirs.
 
 ## Acting on the results
 
