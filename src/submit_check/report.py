@@ -35,6 +35,8 @@ def text(findings: list[Finding], header: dict, venue, color: bool) -> str:
     what = f"{venue.name} rules" if venue else "no venue rules (pass --venue)"
     tmpl = f"template {header['template']} ({header['template_mode']} mode)" if header["template"] else "no known template"
     out = [f"submit-check {__version__} · {visible(header['paper'])}: {header['mode']}, {what}, {tmpl}", ""]
+    if header.get("only_supplementary"):
+        out[0] = f"submit-check {__version__} · {visible(header['paper'])}: supplementary material ({header['mode']})"
     for f in findings:
         where = f"{visible(f.file)}:{f.line}" if f.line else visible(f.file)
         out.append(f"{paint(COLOR[f.severity], f.severity.upper().ljust(8) if f.severity != 'note' else 'note    ')} {where}  {visible(f.message)}")

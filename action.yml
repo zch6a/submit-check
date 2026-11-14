@@ -17,6 +17,9 @@ inputs:
   pdf:
     description: The compiled PDF, to check the page limit, metadata and fonts (default the main file's .pdf, if it is in the repository)
     default: ""
+  supplementary:
+    description: Supplementary material to check for what gives the authors away (a .zip or a folder, relative to the repository)
+    default: ""
   fail-on:
     description: '"error" (default), "warning" or "never"'
     default: error
@@ -36,6 +39,7 @@ runs:
         VENUE: ${{ inputs.venue }}
         MODE: ${{ inputs.mode }}
         PDF: ${{ inputs.pdf }}
+        SUPP: ${{ inputs.supplementary }}
         FAIL_ON: ${{ inputs.fail-on }}
         ACTION_PATH: ${{ github.action_path }}
       run: |
@@ -43,6 +47,7 @@ runs:
         args=(--mode "$MODE")
         [ -n "$VENUE" ] && args+=("--venue=$VENUE")
         [ -n "$PDF" ] && args+=("--pdf=$PDF")
+        [ -n "$SUPP" ] && args+=("--supplementary=$SUPP")
         set +e
         uvx --from "$ACTION_PATH" submit-check "${args[@]}" --fail-on never --format md -- "$PAPER" >> "$GITHUB_STEP_SUMMARY"
         uvx --from "$ACTION_PATH" submit-check "${args[@]}" --fail-on "$FAIL_ON" --format json -- "$PAPER" > "$report"

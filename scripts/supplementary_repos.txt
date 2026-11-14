@@ -1,0 +1,15 @@
+facebookresearch/dino
+openai/CLIP
+karpathy/nanoGPT
+microsoft/LoRA
+state-spaces/mamba
+tatsu-lab/stanford_alpaca
+google-research/vision_transformer
+CompVis/stable-diffusion
+princeton-nlp/tree-of-thought-llm
+ZhuiyiTechnology/roformer
+facebookresearch/mae
+openai/guided-diffusion
+huggingface/alignment-handbook
+EleutherAI/gpt-neox
+Dao-AILab/flash-attention

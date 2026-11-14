@@ -5,7 +5,9 @@
 **Don't get desk-rejected for something a script could have caught.** submit-check reads your LaTeX project and the
 compiled PDF, and checks them against the venue's submission rules: nothing gives the authors away, the template is
 in the right mode, the required sections are there, the content fits the page limit, the PDF's fonts and metadata are
-clean, and no `\todo` is left. Before you post the source to arXiv, it lists the comments the world would read.
+clean, and no `\todo` is left. It looks through the supplementary zip too (names, paths, `.git`, file metadata,
+secrets), checks a camera-ready for what the review version left behind, and before you post the source to arXiv
+it lists the comments the world would read.
 
 <a href="https://github.com/zch6a/submit-check/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/zch6a/submit-check/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue">
@@ -30,7 +32,7 @@ This is submit-check's real output on [the example paper](examples/paper/main.te
 
 ```text
 $ submit-check examples/paper
-submit-check 0.1.0 · examples/paper: submission, ICML 2025 rules, template icml2025 (final mode)
+submit-check 0.2.0 · examples/paper: submission, ICML 2025 rules, template icml2025 (final mode)
 
 ERROR    main.tex:1  ICML 2025 requires an Impact Statement section, and it is not in the paper (https://icml.cc/Conferences/2025/CallForPapers)
 ERROR    main.tex:6  the icml2025 template is in final mode (accepted): it prints the authors' names; use its anonymous submission mode
@@ -56,10 +58,28 @@ Summary: 4 ERRORS, 5 WARNINGS
 | **The venue's rules** | content pages before the References heading against the limit (submission or camera-ready); required sections: the NeurIPS paper checklist, ICML's Impact Statement, ACL's Limitations section, AAAI's reproducibility checklist; what must not be there (an appendix in an ECCV submission) |
 | **The PDF** | Type 3 (bitmap) fonts, fonts not embedded, the paper size (AAAI: US Letter) |
 | **Leftovers** | `\todo{}`, `\fixme{}`, TODO / FIXME / TBD in the text, "[citation needed]", "???" (a `\todo` defined to print nothing passes) |
+| **Supplementary material** (`--supplementary`) | a .zip or a folder: the authors' names (from `--author` and the paper's `\author` block, also as `jane_doe` or `janedoe`); e-mail addresses; paths with a user name (`/home/jdoe`, `C:\Users\jdoe`); the project's own licence and metadata (`LICENSE`, `setup.py`, `pyproject.toml`, `CITATION.cff`); a W&B entity; a `.git` folder and what its config and history name; run logs (`wandb/`, `mlruns/`); API keys and tokens; a PDF's Author field and text, an Office file's creator, a photo's Artist and GPS tags, a video's artist tag; a zip inside the zip. Copyright headers of copied code and links to GitHub accounts are listed once, to check by hand |
+| **Camera-ready** (`--mode camera-ready`) | the author block still "Anonymous"; links still pointing to the anonymised copy (anonymous.4open.science, "available upon acceptance"); cited references by "Anonymous"; "under review" or "Paper ID" in the text; `\linenumbers`; `draft` mode; no title in the PDF's metadata. The template's review mode, the camera-ready page limit and the required sections are checked as before |
 | **arXiv** (`--mode arxiv`) | arXiv publishes your source: the comment lines that would be public (the authors' own notes first, not the template's), `\iffalse` blocks, `.tex` files the paper does not use |
 
 Only what prints is checked for leaks: comments and `\iffalse` blocks never reach the PDF (they matter for arXiv, and
 `--mode arxiv` reports them).
+
+Supplementary material is where double-blind review often breaks: reviewers download the zip, and the code inside
+names its authors in a licence, a path or a git folder. On [the example](examples/supplementary/code):
+
+```text
+$ submit-check --supplementary examples/supplementary/code --author "Jane Doe"
+submit-check 0.2.0 · examples/supplementary/code: supplementary material (submission)
+
+ERROR    code/LICENSE:3  an author's name: 'Jane Doe'
+ERROR    code/README.md:5  an author's name: 'janedoe'
+WARNING  code/config.yaml:2  a path with a user name: C:\Users\jdoe (and 1 more place)
+WARNING  code/train.py:5  a W&B entity (a user or team name): jdoe-lab
+note     code  links to GitHub accounts: huggingface, janedoe42; check none of them is yours
+
+Summary: 2 ERRORS, 2 WARNINGS, 1 note
+```
 
 ## The rules, and where they come from
 
@@ -92,8 +112,12 @@ Measured on the arXiv sources of 50 well-known papers (the list is in paper-proo
 [`scripts/papers.txt`](https://github.com/zch6a/paper-proof/blob/main/scripts/papers.txt); the sources are fetched for
 the measurement and never stored here):
 
-- **False alarms.** These are camera-ready versions, so `--mode camera-ready` should find nothing. It finds the 9
-  `\todo{}` notes the Stable Diffusion (LDM) source really prints in red, and nothing else. On the way there:
+- **False alarms.** These are camera-ready versions, so `--mode camera-ready` should find almost nothing. It finds the
+  9 `\todo{}` notes the Stable Diffusion (LDM) source really prints in red; the ReAct source still links its code as
+  `anonymous.4open.science/r/ReAct-2268/`; ConvNeXt still cites ConvMixer as "Anonymous, OpenReview 2021". All three
+  are real leftovers. The camera-ready checks first also reported Chinchilla's `\usepackage{lineno}` (its
+  `\linenumbers` is commented out), its author names joined by `~` as a placeholder, and 5 references by "Anonymous"
+  that the papers never cite; fixed. Earlier:
   newer rules were judged too strictly against older papers, coloured text and lower-case "todo"/"XXX" (toggle names,
   ISBN placeholders, table column specs) raised alarms, and a template loaded inside `\iftoggle` (FlashAttention)
   was taken at face value; all fixed.
@@ -102,10 +126,20 @@ the measurement and never stored here):
 - **Page counting.** On the PDFs of five of them, the References heading was found on the right page each time.
 - **arXiv.** On the same sources as arXiv publishes them, `--mode arxiv` points to the authors' own notes, such as
   the Transformer source's "TODO(noam): update re…".
+- **Supplementary material.** The code of 15 well-known papers, zipped as GitHub serves it
+  ([`scripts/supplementary_repos.txt`](scripts/supplementary_repos.txt)). None is anonymous, so each should give its
+  authors away: 14 do, at warning level (the licence or `setup.py` names them: Robin Rombach, Tri Dao, Andrej
+  Karpathy, Shunyu Yao, OpenAI; or e-mail addresses and paths such as `/home/mchorse`); DINO's only clue is the
+  "Facebook, Inc" copyright headers, which are listed once as a note. Copied code is the hard part: the first run
+  reported 1,783 copyright lines, most of them HuggingFace and NVIDIA headers vendored into LoRA and FlashAttention.
+  Now the project's own licence and metadata are warnings and other headers are one list; "Copyright License" and
+  "Copyright Treaty" from licence texts are no longer read as names.
+  [`scripts/measure_supplementary.py`](scripts/measure_supplementary.py) reproduces this.
 
 What it cannot know:
 - Whether a link, a self-citation or a dataset gives you away in a way it has no pattern for (a lab-specific tool's
-  name, a demo video, a figure with your logo). It is a check, not a guarantee of anonymity.
+  name, what a demo video shows, a figure with your logo, a user name it is not told). It is a check, not a guarantee
+  of anonymity.
 - Rules it does not have: workshop formats, journal templates, venues not listed. Then it still checks anonymity,
   leftovers and the PDF.
 - The page count of a PDF without a References heading (it says so).
@@ -126,7 +160,9 @@ or install it: `uv tool install git+https://github.com/zch6a/submit-check`.
 submit-check paper/                          # a LaTeX project folder (the main .tex is found), its main.pdf if present
 submit-check paper/ --venue neurips2025      # the rules to use (default: from the template)
 submit-check paper/ --pdf build/paper.pdf    # the compiled PDF, if it is elsewhere
-submit-check paper/ --mode camera-ready      # names and acknowledgements are fine now; the camera-ready page limit
+submit-check paper/ --supplementary supp.zip # the supplementary material too (a .zip or a folder)
+submit-check --supplementary code/ --author "Jane Doe"   # only the material, with the names to look for
+submit-check paper/ --mode camera-ready      # the camera-ready: page limit, and what the review version left behind
 submit-check paper/ --mode arxiv             # before uploading the source to arXiv
 submit-check paper.pdf --venue icml2025      # a PDF alone: pages, metadata, fonts
 submit-check --list-venues                   # every rule, with its source
@@ -157,6 +193,7 @@ jobs:
           path: paper
           venue: neurips2025   # optional: from the template otherwise
           # pdf: paper/main.pdf
+          # supplementary: supplementary/code
 ```
 
 The report goes to the job summary; the JSON report is the `report` output. Read-only, and it runs nothing from your
@@ -170,7 +207,9 @@ kind of finding.
 
 ## Privacy
 
-Nothing is sent anywhere: the rules ship with the tool, and the paper and the PDF are read locally. It reads the
+Nothing is sent anywhere: the rules ship with the tool, and the paper and the PDF are read locally. Supplementary
+material is read in memory, file by file (at most 20 MB each, 400 MB in all), and nothing in it is extracted or run.
+A secret is shown by its first characters only. It reads the
 LaTeX project through [paper-proof](https://github.com/zch6a/paper-proof)'s reader (`\input`, comments, `\iffalse`),
 whose reference checks it does not use.
 

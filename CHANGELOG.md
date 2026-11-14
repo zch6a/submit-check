@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.0 — 2026-11-14
+
+**Supplementary material** (`--supplementary ZIP_OR_FOLDER`, repeatable; `--author NAME`): what gives the authors away
+besides the paper. The authors' names (from `--author` and the paper's `\author` block), e-mail addresses, paths with
+a user name, the project's own licence and metadata, a W&B entity, a `.git` folder (and the names in its config and
+history), run logs, editor folders, API keys and tokens (shown by their first characters), a PDF's Author field and
+text, an Office file's creator, a photo's EXIF Artist/Copyright/GPS, a PNG's Author, a video's artist tag, a zip in the
+zip. Copyright headers of copied code and links to GitHub accounts are one note each. Read in memory, nothing
+extracted. With no paper, `submit-check --supplementary DIR` checks the material alone. In camera-ready and arXiv
+modes only secrets are reported. The GitHub Action has a `supplementary` input.
+
+Measured on the code of 15 well-known papers (none anonymous): 14 give their authors away at warning level, the 15th
+(DINO) through copyright headers listed in a note.
+
+**Camera-ready** (`--mode camera-ready`): the author block still a placeholder; anonymised links
+(anonymous.4open.science, "available upon acceptance"); cited references by "Anonymous"; "under review", "Paper ID"
+in the text; `\linenumbers`; `draft` mode; no title in the PDF's metadata. On the 50 arXiv sources it finds two real
+leftovers besides the 9 `\todo` notes already found (ReAct's anonymous code link, ConvNeXt's "Anonymous" reference).
+
 ## 0.1.1 — 2026-11-14
 
 - The agent skill's frontmatter is valid YAML again: its description held a `: `, which YAML reads as a new key, so

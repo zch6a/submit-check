@@ -4,7 +4,7 @@
 
 **别因为一个脚本就能发现的问题被直接拒稿。** submit-check 读你的 LaTeX 工程和编译出的 PDF，对照会议的投稿规定检查：
 没有暴露作者身份的地方、模板用的是正确的模式、必需的章节都在、正文没超页数、PDF 的字体和元数据干净、没有残留的 `\todo`。
-往 arXiv 上传源码之前，它会列出那些全世界都能看到的注释。
+补充材料的压缩包也查（名字、路径、`.git`、文件元数据、密钥）；交终稿时查评审版留下的东西；往 arXiv 上传源码之前，它会列出那些全世界都能看到的注释。
 
 <a href="https://github.com/zch6a/submit-check/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/zch6a/submit-check/actions/workflows/ci.yml/badge.svg"></a>
 <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue">
@@ -28,7 +28,7 @@
 
 ```text
 $ submit-check examples/paper
-submit-check 0.1.0 · examples/paper: submission, ICML 2025 rules, template icml2025 (final mode)
+submit-check 0.2.0 · examples/paper: submission, ICML 2025 rules, template icml2025 (final mode)
 
 ERROR    main.tex:1  ICML 2025 requires an Impact Statement section, and it is not in the paper (https://icml.cc/Conferences/2025/CallForPapers)
 ERROR    main.tex:6  the icml2025 template is in final mode (accepted): it prints the authors' names; use its anonymous submission mode
@@ -54,9 +54,26 @@ Summary: 4 ERRORS, 5 WARNINGS
 | **会议规定** | References 之前的正文页数对照上限（投稿或终稿）；必需章节：NeurIPS 的 paper checklist、ICML 的 Impact Statement、ACL 的 Limitations、AAAI 的复现清单；不许出现的内容（ECCV 投稿正文里的附录） |
 | **PDF** | Type 3（位图）字体、未嵌入的字体、纸张大小（AAAI：US Letter） |
 | **残留** | `\todo{}`、`\fixme{}`、正文里的 TODO / FIXME / TBD、“[citation needed]”、“???”（被定义成什么都不印的 `\todo` 不报） |
+| **补充材料**（`--supplementary`） | .zip 或文件夹：作者的名字（来自 `--author` 和论文的 `\author`，也认 `jane_doe`、`janedoe` 这类写法）；邮箱；带用户名的路径（`/home/jdoe`、`C:\Users\jdoe`）；项目自己的许可证和元数据（`LICENSE`、`setup.py`、`pyproject.toml`、`CITATION.cff`）；W&B 的 entity；`.git` 文件夹及其配置和历史里的名字；运行日志（`wandb/`、`mlruns/`）；API 密钥和令牌；PDF 的 Author 字段和正文、Office 文件的创建者、照片的 Artist 和 GPS 信息、视频的作者标签；压缩包里套的压缩包。复制来的代码里的版权声明和 GitHub 账号链接只汇总列一次，由你自己核对 |
+| **终稿**（`--mode camera-ready`） | 作者栏还是 “Anonymous”；链接还指向匿名副本（anonymous.4open.science、“available upon acceptance”）；被引用的参考文献作者是 “Anonymous”；正文里有 “under review” 或 “Paper ID”；`\linenumbers`；`draft` 模式；PDF 元数据里没有标题。模板是否还在评审模式、终稿页数和必需章节照旧检查 |
 | **arXiv**（`--mode arxiv`） | arXiv 会公开你的源码：会被公开的注释行（先列作者自己的笔记，不是模板的）、`\iffalse` 块、论文没用到的 `.tex` 文件 |
 
 查泄露只看会印出来的内容：注释和 `\iffalse` 块不会进 PDF（它们对 arXiv 才要紧，由 `--mode arxiv` 报告）。
+
+双盲评审常常在补充材料上露馅：审稿人下载压缩包，里面的代码在许可证、路径或 `.git` 文件夹里写着作者是谁。在[示例](examples/supplementary/code)上：
+
+```text
+$ submit-check --supplementary examples/supplementary/code --author "Jane Doe"
+submit-check 0.2.0 · examples/supplementary/code: supplementary material (submission)
+
+ERROR    code/LICENSE:3  an author's name: 'Jane Doe'
+ERROR    code/README.md:5  an author's name: 'janedoe'
+WARNING  code/config.yaml:2  a path with a user name: C:\Users\jdoe (and 1 more place)
+WARNING  code/train.py:5  a W&B entity (a user or team name): jdoe-lab
+note     code  links to GitHub accounts: huggingface, janedoe42; check none of them is yours
+
+Summary: 2 ERRORS, 2 WARNINGS, 1 note
+```
 
 ## 规则及其出处
 
@@ -83,14 +100,15 @@ Summary: 4 ERRORS, 5 WARNINGS
 
 在 50 篇知名论文的 arXiv 源码上测量（清单见 paper-proof 的 [`scripts/papers.txt`](https://github.com/zch6a/paper-proof/blob/main/scripts/papers.txt)；测量时取源码，不存进本仓库）：
 
-- **误报。** 这些都是终稿，`--mode camera-ready` 应该什么都不报。它只报了 Stable Diffusion（LDM）源码里确实以红字印出的 9 处 `\todo{}`。
-  过程中修掉的：拿新规则苛求旧论文；彩色文字和小写的 “todo”/“XXX”（toggle 名、ISBN 占位、表格列格式）误报；在 `\iftoggle` 里加载的模板（FlashAttention）被当真。
+- **误报。** 这些都是终稿，`--mode camera-ready` 应该几乎什么都不报。它报了 Stable Diffusion（LDM）源码里确实以红字印出的 9 处 `\todo{}`；ReAct 的源码里代码链接还是 `anonymous.4open.science/r/ReAct-2268/`；ConvNeXt 引用 ConvMixer 时作者还写着 “Anonymous, OpenReview 2021”。这三处都是真的遗留。
+  终稿检查第一版还把 Chinchilla 的 `\usepackage{lineno}`（它的 `\linenumbers` 被注释掉了）、用 `~` 连起来的作者名，以及论文没有引用的 5 条 “Anonymous” 参考文献报了出来，已修正。更早修掉的：拿新规则苛求旧论文；彩色文字和小写的 “todo”/“XXX”（toggle 名、ISBN 占位、表格列格式）误报；在 `\iftoggle` 里加载的模板（FlashAttention）被当真。
 - **漏报。** 把五类泄露（自己代码的链接、第一人称自引、致谢、邮箱、资助）各三种写法插进 50 篇论文的正文：**750 处全部查出**，且都在插入的那一行。
 - **页数。** 其中 5 篇的 PDF 上，References 标题每次都找对了页。
 - **arXiv。** 在 arXiv 公开的这些源码上，`--mode arxiv` 指出的是作者自己的笔记，比如 Transformer 源码里的 “TODO(noam): update re…”。
+- **补充材料。** 15 篇知名论文的代码，按 GitHub 提供的压缩包原样检查（清单见 [`scripts/supplementary_repos.txt`](scripts/supplementary_repos.txt)）。它们都不是匿名的，所以每一份都应该暴露作者：14 份在警告级别查出（许可证或 `setup.py` 写着 Robin Rombach、Tri Dao、Andrej Karpathy、Shunyu Yao、OpenAI 等，或者是邮箱和 `/home/mchorse` 这样的路径）；DINO 唯一的线索是源文件里 “Facebook, Inc” 的版权声明，汇总成一条提示。难点在复制来的代码：第一版报了 1783 条版权行，大多是 LoRA 和 FlashAttention 里附带的 HuggingFace、NVIDIA 文件头。现在项目自己的许可证和元数据给警告，其余文件头汇总成一条；许可证正文里的 “Copyright License”、“Copyright Treaty” 不再被当成名字。[`scripts/measure_supplementary.py`](scripts/measure_supplementary.py) 可以复现。
 
 它不知道的：
-- 它没有对应模式的泄露方式（实验室专用工具的名字、演示视频、带着你们 logo 的图）。这是检查，不是匿名的保证。
+- 它没有对应模式的泄露方式（实验室专用工具的名字、演示视频的画面、带着你们 logo 的图、没告诉它的用户名）。这是检查，不是匿名的保证。
 - 它没有的规则：研讨会格式、期刊模板、没列出的会议。这时仍会检查匿名、残留和 PDF。
 - 没有 References 标题的 PDF 的页数（会说明）。
 
@@ -110,7 +128,9 @@ uvx --from git+https://github.com/zch6a/submit-check submit-check path/to/paper
 submit-check paper/                          # LaTeX 工程文件夹（自动找主文件），同名 PDF 在的话一起查
 submit-check paper/ --venue neurips2025      # 指定规则（默认看模板）
 submit-check paper/ --pdf build/paper.pdf    # PDF 在别处时
-submit-check paper/ --mode camera-ready      # 终稿：作者名和致谢都可以有了，按终稿页数查
+submit-check paper/ --supplementary supp.zip # 连补充材料一起查（.zip 或文件夹）
+submit-check --supplementary code/ --author "Jane Doe"   # 只查补充材料，并告诉它要找的名字
+submit-check paper/ --mode camera-ready      # 终稿：按终稿页数查，并找评审版留下的东西
 submit-check paper/ --mode arxiv             # 上传 arXiv 源码之前
 submit-check paper.pdf --venue icml2025      # 只有 PDF：页数、元数据、字体
 submit-check --list-venues                   # 列出每条规则和出处
@@ -139,6 +159,7 @@ jobs:
           path: paper
           venue: neurips2025   # 可选，不写就看模板
           # pdf: paper/main.pdf
+          # supplementary: supplementary/code
 ```
 
 报告写进任务摘要，JSON 报告是 `report` 输出。只需读权限，不运行你仓库里的任何东西。
@@ -149,7 +170,7 @@ jobs:
 
 ## 隐私
 
-不发送任何内容：规则随工具一起发布，论文和 PDF 都在本地读取。LaTeX 工程通过 [paper-proof](https://github.com/zch6a/paper-proof) 的读取器读取（`\input`、注释、`\iffalse`），不使用它联网核查参考文献的部分。
+不发送任何内容：规则随工具一起发布，论文和 PDF 都在本地读取。补充材料在内存里逐个文件读取（每个最多 20 MB，总共最多 400 MB），不解压到磁盘，也不运行其中任何东西。密钥只显示开头几个字符。LaTeX 工程通过 [paper-proof](https://github.com/zch6a/paper-proof) 的读取器读取（`\input`、注释、`\iffalse`），不使用它联网核查参考文献的部分。
 
 ## 属于 research-kit
 

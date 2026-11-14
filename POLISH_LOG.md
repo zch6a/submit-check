@@ -112,3 +112,34 @@ for a tag object at the commit's sha; that request fails, gh prints the error bo
 that text in front of the sha, so v0 would not have moved. It now reads the ref's type and follows a tag object only
 for an annotated tag, and stops if what it got is not a sha (the same fix arxiv-diff had in its final review).
 Releases so far used annotated tags and were not affected.
+
+### 2026-11-14 — 0.2.0: supplementary material and camera-ready
+
+Chosen from research-kit's list of needs nothing covers: "anonymize everything submitted, not just the PDF"
+(anonymous_github hides names in a hosted view only; no tool scans supplementary zips) and "camera-ready checks for ML
+venues beyond ACL" (aclpubcheck covers the ACL template only).
+
+**`supplementary.py`**: a zip or a folder, read in memory (20 MB a file, 400 MB in all, 20,000 files), one level of
+nested zips. Folders (`.git`, `wandb/`, `mlruns/`, `.idea`, `__MACOSX`), credential files, names in file paths; in text
+files: names, secrets, e-mails, user paths, author and copyright lines, W&B entities, GitHub accounts; notebooks read
+as cells and outputs; PDFs (metadata and text, each finding once per PDF), Office properties, EXIF and PNG text, MP4
+tags, all without new dependencies. Names from the paper's `\author` block are matched as written, reversed, and
+joined (`jane_doe`, `janedoe`).
+
+**Measured on 15 public research repositories** (zips from GitHub, to a temporary folder, deleted after):
+- first run: 1,783 author/copyright findings, most from vendored code (HuggingFace headers copied into LoRA, CUTLASS
+  headers in FlashAttention). Now the project's own licence and metadata at the top of the material are warnings,
+  and every other header goes into one list per material (with counts);
+- the same e-mail or user name in 86 places (`/home/mfuntowicz` in notebooks): one finding with "and 85 more places";
+- `git@github.com`, `user:password@host` in URLs, `/home/something` are not addresses or users;
+- "Copyright License. Subject to..." and "WIPO Copyright Treaty" (Apache and Creative Commons texts) were read as names;
+- "Copyright (c) 2021 OpenAI" was missed (one word): now found. Result: 14 of 15 at warning level, DINO by a note.
+
+**`camera.py`**: placeholder authors, anonymised links, "Anonymous" references, "under review", `\linenumbers`,
+`draft`, the PDF's title. On the 50 arXiv sources: ReAct's anonymous.4open.science link and ConvNeXt's "Anonymous"
+reference to ConvMixer are real. Fixed on the way: a nested quantifier in the "submitted to ..." pattern made the run
+hang (catastrophic backtracking); `\usepackage{lineno}` alone numbers nothing (Chinchilla keeps `% \linenumbers`);
+`Jordan~Hoffmann` is a name; uncited "Anonymous" entries never print.
+
+13 tests (49 in all); README and Chinese README (what it checks, measured results, usage), Action input, Skill,
+CHANGELOG; `examples/supplementary/code` with planted leaks.

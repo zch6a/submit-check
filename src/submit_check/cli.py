@@ -11,7 +11,7 @@ from paper_proof.latex import find_main, read_project
 from paper_proof.numbers import Finding
 from paper_proof.report import use_color
 
-from . import __version__, anonymity, arxivcheck, leftovers, pdfcheck, rules, templates
+from . import __version__, anonymity, arxivcheck, camera, leftovers, pdfcheck, rules, supplementary, templates
 from .report import ORDER, list_venues, markdown, text
 
 
@@ -34,6 +34,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--pdf", type=Path, help="the compiled PDF (default: the main file's .pdf, if there is one)")
     p.add_argument(
+        "--supplementary",
+        type=Path,
+        action="append",
+        default=[],
+        metavar="ZIP_OR_FOLDER",
+        help="supplementary material (a .zip or a folder; repeat for several) to check for what gives the authors away: "
+        "names, e-mail addresses, user paths, .git, file metadata, secrets",
+    )
+    p.add_argument(
+        "--author",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="an author's name to look for in the supplementary material (repeat for each; the paper's \\author block is read too)",
+    )
+    p.add_argument(
         "--format",
         choices=["text", "json", "md"],
         default="text",
@@ -52,9 +68,28 @@ def run(argv: list[str] | None = None) -> int:
     if args.list_venues:
         print(list_venues())
         return 0
-    if not args.paper:
+    if not args.paper and not args.supplementary:
         print("submit-check: give the paper's folder or main .tex file (or --list-venues)", file=sys.stderr)
         return 2
+    for supp in args.supplementary:
+        if not supp.exists():
+            print(f"submit-check: {supp}: no such file or folder", file=sys.stderr)
+            return 2
+    if not args.paper:
+        return _report(
+            supp_findings(args, {}),
+            {
+                "paper": ", ".join(map(str, args.supplementary)),
+                "venue": None,
+                "template": None,
+                "template_mode": None,
+                "mode": args.mode,
+                "pdf": None,
+                "only_supplementary": True,
+            },
+            None,
+            args,
+        )
     path = Path(args.paper)
     if not path.exists():
         print(f"submit-check: {path}: no such file or folder", file=sys.stderr)
@@ -111,12 +146,16 @@ def run(argv: list[str] | None = None) -> int:
             findings += found
         if args.mode == "arxiv":
             findings += arxivcheck.check(proj.files, root)
+        if args.mode == "camera-ready":
+            findings += camera.check(texts, template, root)
     if pdf is not None:
         if not pdf.is_file():
             print(f"submit-check: cannot read {pdf}", file=sys.stderr)
             return 2
         findings += pdfcheck.check(pdf, venue, args.mode)
-    findings.sort(key=lambda f: (ORDER.index(f.severity), f.file, f.line))
+        if args.mode == "camera-ready":
+            findings += camera.pdf_check(pdf)
+    findings += supp_findings(args, texts)
     header = {
         "paper": str(path),
         "venue": venue.id if venue else None,
@@ -125,6 +164,25 @@ def run(argv: list[str] | None = None) -> int:
         "mode": args.mode,
         "pdf": str(pdf) if pdf else None,
     }
+    return _report(findings, header, venue, args)
+
+
+def supp_findings(args: argparse.Namespace, texts: dict[str, str]) -> list[Finding]:
+    """The supplementary material: everything for a submission; in another mode only secrets (nothing to hide then)."""
+    out: list[Finding] = []
+    names = list(dict.fromkeys(args.author + supplementary.names_from_paper(texts)))
+    for supp in args.supplementary:
+        found = supplementary.check(supp, names)
+        if args.mode != "submission":
+            found = [f for f in found if f.kind == "supp-secret"]
+        out += found
+    return out
+
+
+def _report(findings: list[Finding], header: dict, venue, args: argparse.Namespace) -> int:
+    findings.sort(key=lambda f: (ORDER.index(f.severity), f.file, f.line))
+    if args.supplementary:
+        header["supplementary"] = [str(s) for s in args.supplementary]
     if args.format == "json":
         print(
             json.dumps(

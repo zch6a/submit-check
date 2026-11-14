@@ -12,7 +12,7 @@ def table(readme: str) -> dict[str, tuple[str, str]]:
     """venue id -> (pages cell, row) from the rules table."""
     out = {}
     for line in readme.split("\n"):
-        m = re.match(r"\|[^|]*\(`([\w-]+)`\)[^|]*\|\s*([^|]*)\|", line) or re.match(r"\|[^|]*（`([\w-]+)`）[^|]*\|\s*([^|]*)\|", line)
+        m = re.match(r"\|[^|]*\(`(\w[\w-]*)`\)[^|]*\|\s*([^|]*)\|", line) or re.match(r"\|[^|]*（`(\w[\w-]*)`）[^|]*\|\s*([^|]*)\|", line)
         if m:
             out[m.group(1)] = (m.group(2).strip(), line)
     return out
