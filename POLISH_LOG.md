@@ -164,9 +164,9 @@ not ICML's: its message now says it is part of the title block ICML expects. 3 t
 
 research-kit's deadline table lacked what its gap names: LLM policies, supplementary deadlines, rebuttal windows. The
 nine official pages the rules come from were read again for these. The quotes came through a summarising reader
-first; each was then checked against the page's own text (tags stripped): 23 of 30 matched as given; the other 7
-were the summariser closing a sentence early ("..., and may be rejected without review" given as a full stop), so the
-files keep the page's own fragment. ICLR's "responses as comments on OpenReview" was checked the same way. Where a
+first; each was then checked against the page's own text (tags stripped): 19 of 24 matched as given; 4 were the
+summariser closing a sentence early ("..., and may be rejected without review" given as a full stop), and IJCAI's
+response period has a space before its colon; the files keep the page's own wording. ICLR's "responses as comments on OpenReview" was checked the same way. Where a
 page says nothing (AAAI on LLMs, CVPR on supplementary deadlines), the value is empty, not guessed.
 
 Notes in submission mode only where the paper can act: an ICLR paper with no LLM-usage section (whether LLMs were used,
