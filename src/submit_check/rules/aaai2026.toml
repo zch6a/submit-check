@@ -29,3 +29,12 @@ what = "the reproducibility checklist"
 pattern = 'reproducibility\s+checklist'
 modes = ["submission"]
 severity = "error"
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+llm = ""
+llm_disclose = ""
+# Supplementary material and code due by 11:59 PM UTC-12
+supplementary = "August 4, 2025, 11:59 PM UTC-12 (three days after the paper)"
+# October 7-13, 2025 Author feedback window
+rebuttal = "author feedback window October 7-13, 2025"

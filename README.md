@@ -135,6 +135,25 @@ the sentence of the official call for papers it comes from, the page's address, 
 | IJCAI-ECAI 2026, main track (`ijcai2026`) | 7 | references (2 pages), ethics | | [call for papers](https://2026.ijcai.org/ijcai-ecai-2026-call-for-papers-main-track/) |
 | AAAI-26 (`aaai2026`) | 7 | references, reproducibility checklist | reproducibility checklist; US Letter; Type 1/TrueType fonts | [submission instructions](https://aaai.org/conference/aaai/aaai-26/submission-instructions/) |
 
+What each official page says about LLM use, supplementary material and the author response (`policy` in the same
+files; each quote checked against the page on 2026-11-14; a dash where the page does not say):
+
+| Venue | LLM use | Supplementary material | Author response |
+|---|---|---|---|
+| NeurIPS 2025 | follow the NeurIPS LLM policy | May 22, 2025 AoE (a week after the paper), up to 100 MB, one ZIP | one week to respond to the initial reviews |
+| ICML 2025 | allowed, to assist in writing or research | no separate deadline | — |
+| ICLR 2026 | allowed; significant use described in a separate section on LLM usage (undisclosed: desk rejection) | with the paper | comments on OpenReview, revisions until the end of the discussion period |
+| ACL Rolling Review | disclosed in the Responsible NLP Checklist | software and data as two archives, anonymized | — |
+| CVPR 2026 | any tools; the authors are responsible | — | a one-page PDF |
+| ECCV 2026 | any tools; citing non-existent material leads to rejection | Mar 12, 2026, 11:00 PM CET | a one-page PDF including references |
+| AAAI-26 | — | August 4, 2025 (three days after the paper) | October 7-13, 2025 |
+| IJCAI-ECAI 2026 | allowed; the authors take full responsibility | with the paper, up to 50 MB | April 7-10, 2026 |
+| KDD 2026 | disclosed in the submission form (ACM policy) | — | Apr 4-17, 2026 (February cycle) |
+
+In submission mode the report adds a note where the paper can act on it: ICLR's LLM-usage section when the paper has
+none, the checklist or form where ACL and KDD want LLM use disclosed, and ECCV's rule on citing non-existent material
+(paper-proof checks the references). `submit-check --list-venues` prints them too.
+
 What an official page does not state (CVPR's camera-ready length, for instance) is not in the rules. Rules change
 every year: a pull request with the new value, the sentence and the source is the way to fix one, and adding a venue
 is one file ([CONTRIBUTING](CONTRIBUTING.md)).

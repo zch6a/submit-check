@@ -42,6 +42,7 @@ class Venue:
     forbidden: list[Required] = field(default_factory=list)  # what must not be there (ECCV: an appendix)
     paper: str = ""
     no_type3_fonts: bool = False
+    policy: dict[str, str] = field(default_factory=dict)  # llm, llm_disclose, supplementary, rebuttal: what the page says
 
     @property
     def year(self) -> int | None:
@@ -65,6 +66,7 @@ def _venue(data: dict) -> Venue:
         forbidden=[Required(**r) for r in data.get("forbidden", [])],
         paper=data.get("pdf", {}).get("paper", ""),
         no_type3_fonts=data.get("pdf", {}).get("no_type3_fonts", False),
+        policy={k: str(v) for k, v in data.get("policy", {}).items() if str(v)},
     )
 
 
@@ -152,6 +154,8 @@ def check(texts: dict[str, str], venue: Venue, template: Template, mode: str) ->
             out.append(
                 Finding("required-section", r.severity, main_file, 1, f"{venue.name} requires {r.what}, and it is not in the paper ({venue.source})")
             )
+    if mode == "submission":
+        out += policy_notes(texts, venue, main_file, headings)
     for r in venue.forbidden:
         if mode not in r.modes:
             continue
@@ -161,4 +165,22 @@ def check(texts: dict[str, str], venue: Venue, template: Template, mode: str) ->
                 line = text.count("\n", 0, m.start()) + 1
                 out.append(Finding("forbidden", r.severity, file, line, f"{venue.name} does not allow {r.what} ({venue.source})"))
                 break
+    return out
+
+
+def policy_notes(texts: dict[str, str], venue: Venue, main_file: str, headings: str) -> list[Finding]:
+    """What the venue says about LLM use, where the paper can act on it (notes: whether LLMs were used, the tool cannot know)."""
+    out: list[Finding] = []
+    where = venue.policy.get("llm_disclose", "")
+    if where and "section" in where:
+        if not re.search(r"\bLLMs?\b|language\s+models?\s+usage|use\s+of\s+(?:large\s+language\s+models|LLMs|AI)", headings, re.I):
+            out.append(Finding("llm-policy", "note", main_file, 1, f"{venue.name}: if LLMs were used significantly, describe it in {where}; "
+                                                                   f"not disclosing it can lead to desk rejection ({venue.source})"))  # fmt: skip
+    elif where:
+        out.append(
+            Finding("llm-policy", "note", main_file, 1, f"{venue.name}: any use of LLMs or generative AI is disclosed in {where} ({venue.source})")
+        )
+    if "non-existent" in venue.policy.get("llm", ""):
+        out.append(Finding("llm-policy", "note", main_file, 1, f"{venue.name} rejects papers that cite non-existent material: check the references "
+                                                               f"(paper-proof does) ({venue.source})"))  # fmt: skip
     return out

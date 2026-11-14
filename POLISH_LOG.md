@@ -159,3 +159,15 @@ Measured on the 50 arXiv sources (fetched again, deleted after): 43 have a known
 venue. 121 old-template commands, 43 template swaps, 37 section notes, 28 bibliography styles: read through, all
 right. Column notes were 313 (one per float); now one per file and kind with a count (137). `\twocolumn[` is LaTeX's,
 not ICML's: its message now says it is part of the title block ICML expects. 3 tests.
+
+### 2026-11-14 — 0.4.0: LLM policies, supplementary material and author response
+
+research-kit's deadline table lacked what its gap names: LLM policies, supplementary deadlines, rebuttal windows. The
+nine official pages the rules come from were read again for these. The quotes came through a summarising reader
+first; each was then checked against the page's own text (tags stripped): 23 of 30 matched as given; the other 7
+were the summariser closing a sentence early ("..., and may be rejected without review" given as a full stop), so the
+files keep the page's own fragment. ICLR's "responses as comments on OpenReview" was checked the same way. Where a
+page says nothing (AAAI on LLMs, CVPR on supplementary deadlines), the value is empty, not guessed.
+
+Notes in submission mode only where the paper can act: an ICLR paper with no LLM-usage section (whether LLMs were used,
+the tool cannot know: a note), ACL and KDD's disclosure, ECCV's rule on citing non-existent material. 1 test.

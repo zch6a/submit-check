@@ -24,3 +24,12 @@ what = "an Impact Statement section"
 pattern = 'impact\s+statement|broader\s+impact'
 modes = ["submission", "camera-ready"]
 severity = "error"
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Authors are allowed to use generative AI tools such as Large Language Models (LLMs) to assist in writing or research.
+llm = "allowed, to assist in writing or research"
+llm_disclose = ""
+# There will be no separate deadline for the submission of supplementary material.
+supplementary = "no separate deadline: with the paper"
+rebuttal = ""

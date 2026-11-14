@@ -24,3 +24,14 @@ what = "a Reproducibility Statement (strongly encouraged)"
 pattern = 'reproducibility\s+statement'
 modes = ["submission", "camera-ready"]
 severity = "note"
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Not disclosing significant LLM usage can lead to desk rejection of the paper.
+llm = "allowed; significant use described in a separate section on LLM usage"
+# authors should describe the precise role of the LLM in a separate section on LLM usage
+llm_disclose = "a separate section on LLM usage (it can be in the appendix)"
+# Supplementary material is due at the same time as the main paper.
+supplementary = "with the paper"
+# authors can post responses to the reviews as comments on OpenReview Authors can also revise their paper until the end of the public discussion period (Dec 3).
+rebuttal = "comments on OpenReview, revisions until the end of the discussion period"

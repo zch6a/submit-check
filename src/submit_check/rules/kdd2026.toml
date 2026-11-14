@@ -18,3 +18,13 @@ not_counted = ["references", "appendix"]
 # "The submitted document should omit any author names, affiliations, or other identifying information."
 # Recommended: \documentclass[sigconf,anonymous,review]{acmart}
 required = true
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Any use of generative AI tools must be disclosed and elaborated in the submission form.
+llm = "any use of generative AI disclosed in the submission form (ACM policy)"
+# Any use of generative AI tools must be disclosed and elaborated in the submission form.
+llm_disclose = "the submission form"
+supplementary = ""
+# Author Rebuttal Period: Apr 4-17, 2026
+rebuttal = "Apr 4-17, 2026 (February cycle); October 4-18, 2025 (July cycle)"

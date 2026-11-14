@@ -25,3 +25,13 @@ what = "the NeurIPS paper checklist"
 pattern = 'checklist'
 modes = ["submission", "camera-ready"]
 severity = "error"
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Authors are responsible for following it.
+llm = "follow the NeurIPS LLM policy (https://neurips.cc/Conferences/2025/LLM)"
+llm_disclose = ""
+# Authors may submit up to 100MB of technical appendices and supplementary material.
+supplementary = "May 22, 2025 AoE (a week after the paper), up to 100 MB, one ZIP"
+# Authors will have one week to view and respond to initial reviews.
+rebuttal = "one week to respond to the initial reviews"

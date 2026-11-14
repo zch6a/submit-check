@@ -16,3 +16,12 @@ not_counted = ["references"]
 # "CVPR reviewing is double blind"; acknowledgments must not identify the authors; "do not provide links to websites
 # that identify the authors."
 required = true
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Authors may use any tools they find productive in preparing a paper
+llm = "any tools; the authors are responsible for the content"
+llm_disclose = ""
+supplementary = ""
+# The rebuttal is limited to a one-page PDF file
+rebuttal = "a one-page PDF"

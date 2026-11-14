@@ -17,3 +17,13 @@ not_counted = ["references", "ethics"]
 # "you should not include author names or affiliations in your submission"; "No acknowledgements or contribution
 # statements should be included in submissions"; "remove identifying information from the PDF metadata."
 required = true
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# If authors use an LLM in any part of the paper-writing process they assume full responsibility for all content
+llm = "allowed; the authors take full responsibility for all content"
+llm_disclose = ""
+# Authors may submit up to 50MB of supplementary material
+supplementary = "with the paper, up to 50 MB, PDF or ZIP"
+# Author response period : April 7-10, 2026
+rebuttal = "April 7-10, 2026"

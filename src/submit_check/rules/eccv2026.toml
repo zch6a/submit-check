@@ -23,3 +23,13 @@ what = "an appendix in the main submission (it goes in the supplementary materia
 pattern = '\\appendix\b|\\begin\{appendices\}'
 modes = ["submission"]
 severity = "error"
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Papers containing citations of non-existent material will be rejected when found, and may be rejected without review
+llm = "any tools; citing non-existent material leads to rejection"
+llm_disclose = ""
+# By the supplementary material deadline (Mar 12, 2026, at 11:00 PM CET)
+supplementary = "Mar 12, 2026, 11:00 PM CET (a week after the paper)"
+# The rebuttal is limited to a one-page PDF file including references
+rebuttal = "a one-page PDF including references"

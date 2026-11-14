@@ -119,6 +119,22 @@ Bibliography
 | IJCAI-ECAI 2026 主赛道（`ijcai2026`） | 7 | 参考文献（2 页）、ethics | | [call for papers](https://2026.ijcai.org/ijcai-ecai-2026-call-for-papers-main-track/) |
 | AAAI-26（`aaai2026`） | 7 | 参考文献、复现清单 | 复现清单；US Letter；Type 1/TrueType 字体 | [submission instructions](https://aaai.org/conference/aaai/aaai-26/submission-instructions/) |
 
+各官方页面对使用大模型、补充材料和作者回复的规定（写在同一批文件的 `policy` 里；每句引文都在 2026-11-14 与页面原文核对过；页面没写的用短横表示）：
+
+| 会议 | 使用大模型 | 补充材料 | 作者回复 |
+|---|---|---|---|
+| NeurIPS 2025 | 遵守 NeurIPS 的 LLM 政策 | 2025 年 5 月 22 日 AoE（比论文晚一周），最多 100 MB，一个 ZIP | 有一周时间回复初审意见 |
+| ICML 2025 | 允许，用于辅助写作或研究 | 没有单独的截止时间 | — |
+| ICLR 2026 | 允许；大量使用要在单独的 LLM 使用一节里说明（不说明可能直接拒稿） | 与论文同时 | 在 OpenReview 上以评论回复，讨论期结束前可修改论文 |
+| ACL Rolling Review | 在 Responsible NLP Checklist 里说明 | 软件和数据各一个压缩包，需匿名 | — |
+| CVPR 2026 | 任何工具都可以，作者负责 | — | 一页 PDF |
+| ECCV 2026 | 任何工具都可以；引用不存在的文献会被拒稿 | 2026 年 3 月 12 日 CET 晚 11 点 | 一页 PDF（含参考文献） |
+| AAAI-26 | — | 2025 年 8 月 4 日（比论文晚三天） | 2025 年 10 月 7-13 日 |
+| IJCAI-ECAI 2026 | 允许，作者对全部内容负责 | 与论文同时，最多 50 MB | 2026 年 4 月 7-10 日 |
+| KDD 2026 | 在投稿表单里说明（ACM 政策） | — | 2026 年 4 月 4-17 日（二月轮次） |
+
+投稿模式下，报告会在论文能据此行动的地方加提示：ICLR 要求的 LLM 使用一节（论文里没有时）、ACL 和 KDD 要求说明大模型使用的清单或表单，以及 ECCV 对引用不存在文献的规定（paper-proof 可以检查参考文献）。`submit-check --list-venues` 也会列出这些内容。
+
 官方页面没写的（比如 CVPR 终稿页数）规则里就没有。规则每年都变：修正一条只需一个改值、附原句和出处的 PR；加一个会议就是加一个文件（见 [CONTRIBUTING](CONTRIBUTING.md)）。
 
 不指定 `--venue` 时由模板决定用哪套规则（ACM 的 `acmart` 要用 `--venue`：一个模板对应几十个会议）。模板较旧（如 `neurips_2023`）时用该会议最新的规则并在报告里说明；这时新规则要求的章节缺失只给提示。

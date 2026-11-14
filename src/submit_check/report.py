@@ -21,6 +21,9 @@ def list_venues() -> str:
         pages = f"{v.pages_submission} pages" + (f" ({v.pages_camera_ready} camera-ready)" if v.pages_camera_ready else "")
         req = "; requires " + ", ".join(r.what for r in v.required) if v.required else ""
         lines.append(f"{v.id:12} {v.name}: {pages}, not counting {', '.join(v.not_counted)}{req}\n{'':13}{v.source} (read {v.verified})")
+        for key, label in (("llm", "LLM use"), ("supplementary", "supplementary"), ("rebuttal", "author response")):
+            if v.policy.get(key):
+                lines.append(f"{'':13}{label}: {v.policy[key]}")
     return "\n".join(lines)
 
 

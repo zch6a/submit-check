@@ -7,6 +7,10 @@ from submit_check import pdfcheck, rules, templates
 from submit_check.cli import run
 
 
+def check(*a):
+    return [f for f in rules.check(*a) if f.kind != "llm-policy"]  # the venue's LLM policy notes are tested apart
+
+
 def make_pdf(path: Path, pages: list[list[str]], author: str = "", font: str = "Type1", size=(612, 792)) -> Path:
     """A small PDF: one text line per string, one list per page; an /Info Author; a Type1 (not embedded) or Type3 font."""
 
@@ -78,22 +82,22 @@ def test_required_sections_and_template():
     acl = rules.all_venues()["acl-arr"]
     tex = r"\documentclass{article}\usepackage[review]{acl}\begin{document}\section{Introduction}x\end{document}"
     t = templates.detect(tex)
-    (f,) = rules.check({"main.tex": tex}, acl, t, "submission")
+    (f,) = check({"main.tex": tex}, acl, t, "submission")
     assert "Limitations" in f.message
     good = tex.replace(r"\end{document}", r"\section*{Limitations}We did not.\end{document}")
-    assert rules.check({"main.tex": good}, acl, t, "submission") == []
+    assert check({"main.tex": good}, acl, t, "submission") == []
     # an ICML paper written with the NeurIPS template
     wrong = r"\usepackage{neurips_2025}\section{Impact Statement}"
-    assert [f.kind for f in rules.check({"m.tex": wrong}, ICML, templates.detect(wrong), "submission")] == ["wrong-template"]
+    assert [f.kind for f in check({"m.tex": wrong}, ICML, templates.detect(wrong), "submission")] == ["wrong-template"]
 
 
 def test_eccv_forbids_an_appendix_and_kdd_uses_acmart():
     eccv = rules.all_venues()["eccv2026"]
     tex = r"\usepackage[review,year=2026,ID=1]{eccv}\section{Method}x\appendix\section{Proofs}"
-    (f,) = rules.check({"main.tex": tex}, eccv, templates.detect(tex), "submission")
+    (f,) = check({"main.tex": tex}, eccv, templates.detect(tex), "submission")
     assert f.kind == "forbidden" and "appendix" in f.message
     final = tex.replace("[review,", "[")
-    assert rules.check({"main.tex": final}, eccv, templates.detect(final), "camera-ready") == []  # appendix fine then
+    assert check({"main.tex": final}, eccv, templates.detect(final), "camera-ready") == []  # appendix fine then
     kdd = r"\documentclass[sigconf,anonymous,review]{acmart}"
     t = templates.detect(kdd)
     assert (t.venue, t.mode) == ("acm", "review")
@@ -156,3 +160,20 @@ Our code is at \url{https://github.com/adalovelace/engine}. \todo{fix}
     (tmp_path / "part.tex").write_text("A section \\todo{x}.", encoding="utf-8")
     run([str(tmp_path / "part.tex"), "--format", "json", "--fail-on", "never"])
     assert "not-main-file" in {f["kind"] for f in json.loads(capsys.readouterr().out)["findings"]}
+
+
+def test_venue_policy_notes():
+    v = rules.all_venues()
+    iclr, acl, eccv, icml = v["iclr2026"], v["acl-arr"], v["eccv2026"], v["icml2025"]
+    assert iclr.policy["llm_disclose"].startswith("a separate section on LLM usage")
+    tex = r"\usepackage{iclr2026_conference}\section{Method}x"
+    notes = [f.message for f in rules.check({"m.tex": tex}, iclr, templates.detect(tex), "submission") if f.kind == "llm-policy"]
+    assert len(notes) == 1 and "separate section on LLM usage" in notes[0]
+    with_section = tex + r"\section{LLM usage}We used an LLM to polish the writing."
+    assert not [f for f in rules.check({"m.tex": with_section}, iclr, templates.detect(tex), "submission") if f.kind == "llm-policy"]
+    acl_tex = r"\usepackage[review]{acl}"
+    assert any("Responsible NLP Checklist" in f.message for f in rules.check({"m.tex": acl_tex}, acl, templates.detect(acl_tex), "submission"))
+    eccv_tex = r"\usepackage[review]{eccv}"
+    assert any("non-existent" in f.message for f in rules.check({"m.tex": eccv_tex}, eccv, templates.detect(eccv_tex), "submission"))
+    assert not [f for f in rules.check({"m.tex": tex}, iclr, templates.detect(tex), "camera-ready") if f.kind == "llm-policy"]
+    assert icml.policy["supplementary"].startswith("no separate deadline") and "llm_disclose" not in icml.policy

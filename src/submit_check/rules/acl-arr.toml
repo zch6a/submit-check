@@ -24,3 +24,13 @@ pattern = 'limitations?'
 heading = true
 modes = ["submission", "camera-ready"]
 severity = "error"
+
+[policy]
+# From the same official page as the rules above, quotes checked against its text on 2026-11-14; "" when it does not say.
+# Their use for writing or coding, as well as its scope, must be disclosed in the Responsible NLP Checklist.
+llm = "use for writing or coding disclosed in the Responsible NLP Checklist"
+# Their use for writing or coding, as well as its scope, must be disclosed in the Responsible NLP Checklist.
+llm_disclose = "the Responsible NLP Checklist"
+# Software should be submitted as a single .tgz or .zip archive, and data as a separate single .tgz or .zip archive.
+supplementary = "software and data as two .tgz or .zip archives, anonymized"
+rebuttal = ""

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 — 2026-11-14
+
+- Each venue's rules file has a `policy` table: what its official page says on LLM use, supplementary material and
+  the author response, each with the quote it comes from (checked against the page). `--list-venues` prints them.
+- In submission mode, notes where the paper can act on them: ICLR 2026's section on LLM usage (when the paper has
+  none), ACL's and KDD's disclosure (checklist, submission form), ECCV 2026's rejection of citations to non-existent
+  material.
+
 ## 0.3.0 — 2026-11-14
 
 - **`submit-check move PAPER --to VENUE`**: what moving a paper to another venue's template involves, each with its
